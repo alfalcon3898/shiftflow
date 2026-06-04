@@ -15,59 +15,64 @@ employees = [
 # Add a new employee to the employees list
 def add_employee():
 
-    # Create an empty dictionary for one employee
-    employee = {}
+    employee = {}  # Create an empty employee dictionary
 
-    # Get employee information from the user
-    name = input("Enter employee name: ")
-    role = input("Enter employee role: ")
+    name = input("Enter employee name: ")  # Get employee name
+    role = input("Enter employee role: ")  # Get employee role
 
-    # Store the values in the dictionary
-    employee["name"] = name
-    employee["role"] = role
+    employee["name"] = name  # Store employee name
+    employee["role"] = role  # Store employee role
 
-    # Every employee starts with an empty availability list
-    employee["availability"] = []
+    employee["availability"] = []  # Start with empty availability
 
-    # Add the completed employee dictionary to the employees list
-    employees.append(employee)
+    employees.append(employee)  # Add employee to list
 
 
 # Search for an employee by name
 def search_employee():
 
-    # Tracks whether we found the employee
-    found = False
+    found = False  # Tracks whether employee was found
 
-    # Ask which employee to search for
-    search_name = input("Enter employee name: ")
+    search_name = input("Enter employee name: ")  # Employee to search for
 
-    # Loop through every employee in the list
-    for employee in employees:
+    for employee in employees:  # Loop through employee list
 
-        # Compare names without caring about uppercase/lowercase
-        if employee["name"].lower() == search_name.lower():
+        if employee["name"].lower() == search_name.lower():  # Compare names
 
-            found = True
+            found = True  # Employee found
 
-            # Display employee information
-            print(f"Name: {employee['name']}")
-            print(f"Role: {employee['role']}")
-            print(f"Availability: {employee['availability']}")
+            print(f"Name: {employee['name']}")  # Display name
+            print(f"Role: {employee['role']}")  # Display role
+            availability_text = ", ".join(employee["availability"])
+            print(f"Availability: {availability_text}")
 
-    # If no match was found
-    if not found:
+    if not found:  # Runs if employee wasn't found
         print("Employee not found")
 
 
 # Display all employees and their roles
 def view_employees():
+     for employee in employees:  # Loop through employee list
+         print(f"{employee['name']} - {employee['role']}")  # Display name and role
 
-    # Loop through every employee in the list
+
+# Update an employee's availability
+def update_availability():
+
+    found = False  # Tracks whether employee was found
+    search_name = input("Enter employee name: ")  # Employee to update
+
     for employee in employees:
+        if employee["name"].lower() == search_name.lower():  # Compare names
+            day = input("Enter employee day availability: ")  # Day to add
+            time = input("Enter time: ")  # Time employee can work
+            availability_entry = f"{day} {time}"  # Combines day and time
+            employee["availability"].append(availability_entry)  # Add day to availability
+            found = True  # Employee found
+            print(f"{availability_entry} added to {employee['name']}.") # Success message
 
-        # Print the employee's name and role
-        print(f"{employee['name']} - {employee['role']}")
+    if not found:
+        print("Employee not found")
 
 
 # Main menu loop
@@ -76,26 +81,32 @@ while True:
     print("\n--- ShiftFlow V1 ---")
     print("1. Add Employee")
     print("2. Search Employee")
-    print("3. View Employee")
-    print("4. Exit")
+    print("3. View Employees")
+    print("4. Update Employee Availability")
+    print("5. Exit")
 
-    # Get menu selection from user
-    choice = int(input("Enter your choice: "))
+   
+    try:
+        choice = int(input("Enter your choice: "))  # Convert input to number
+    except ValueError:
+        print("Please enter a number.")  # Runs if user enters text
+        continue  # Restart menu loop
 
-    # Run the selected option
     if choice == 1:
-        add_employee()
+        add_employee()  # Run add employee
 
     elif choice == 2:
-        search_employee()
+        search_employee()  # Run employee search
 
     elif choice == 3:
-        view_employees()
+        view_employees()  # Show all employees
 
     elif choice == 4:
+        update_availability()  # Update availability
+
+    elif choice == 5:
         print("Goodbye")
         break
 
-    # Handle invalid menu choices
     else:
-        print("Invalid choice")
+        print("Invalid choice")  # Invalid menu option
