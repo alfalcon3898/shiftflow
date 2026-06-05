@@ -75,6 +75,41 @@ def update_availability():
         print("Employee not found")
 
 
+#Delete employee
+def delete_employee():
+    found = False #Tracks weather employee was found first false
+    search_name = input("Enter employee name: ") # first need to search the name you want to delete
+
+    for employee in employees: 
+        if employee["name"].lower() == search_name.lower():
+            found = True
+            employees.remove(employee) #remove employee 
+            print(f"{employee['name']} was deleted.") #sucess message
+            break
+        
+    if not found:
+        print("Employee not found ")
+
+
+# Update employee update role
+def update_role():
+    found = False
+    search_name = input("Enter employee name: ")
+    for employee in employees:
+        if employee["name"].lower() == search_name.lower():
+            found = True
+            new_role = input("Enter New employee role: ")
+            employee["role"] = new_role
+            print(f"{employee['name']} role updated to {new_role}")
+            break
+    if not found:
+        print("Employee not found ")
+
+
+    
+
+
+
 # Main menu loop
 while True:
 
@@ -83,7 +118,9 @@ while True:
     print("2. Search Employee")
     print("3. View Employees")
     print("4. Update Employee Availability")
-    print("5. Exit")
+    print("5. Delete Employee")
+    print("6. Update Employee role")
+    print("7. Exit")
 
    
     try:
@@ -103,8 +140,14 @@ while True:
 
     elif choice == 4:
         update_availability()  # Update availability
-
+    
     elif choice == 5:
+        delete_employee() #delete employee
+    
+    elif choice == 6:
+        update_role()
+
+    elif choice == 7:
         print("Goodbye")
         break
 
