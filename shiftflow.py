@@ -1,3 +1,7 @@
+import json
+
+
+
 # List that stores all employees
 employees = [
     {
@@ -11,6 +15,10 @@ employees = [
         "availability": []
     }
 ]
+#save employee
+def save_employees():
+    with open("employees.json", "w") as file:
+        json.dump(employees, file, indent=4)
 
 # Add a new employee to the employees list
 def add_employee():
@@ -26,7 +34,9 @@ def add_employee():
     employee["availability"] = []  # Start with empty availability
 
     employees.append(employee)  # Add employee to list
+    save_employees()
     print("Employee added")
+
 
 # Search for an employee by name
 def search_employee():

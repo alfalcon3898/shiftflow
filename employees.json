@@ -1,0 +1,17 @@
+[
+    {
+        "name": "Allen",
+        "role": "SL",
+        "availability": []
+    },
+    {
+        "name": "John",
+        "role": "Crew",
+        "availability": []
+    },
+    {
+        "name": "Luis",
+        "role": "SL",
+        "availability": []
+    }
+]
