@@ -1,20 +1,15 @@
 import json
 
+def load_employees():
+    global employees
+
+    try:
+        with open("employees.json", "r") as file:
+            employees = json.load(file)
+    except FileNotFoundError:
+        employees = []
 
 
-# List that stores all employees
-employees = [
-    {
-        "name": "Allen",
-        "role": "SL",
-        "availability": []
-    },
-    {
-        "name": "John",
-        "role": "Crew",
-        "availability": []
-    }
-]
 #save employee
 def save_employees():
     with open("employees.json", "w") as file:
@@ -82,6 +77,7 @@ def update_availability():
                  print("Availability already exists")
             else:
                 employee["availability"].append(availability_entry)  # Add day to availability
+                save_employees()
             
                 print(f"{availability_entry} added to {employee['name']}.") # Success message
 
@@ -99,6 +95,7 @@ def delete_employee():
         if employee["name"].lower() == search_name.lower():
             found = True
             employees.remove(employee) #remove employee 
+            save_employees()
             print(f"{employee['name']} was deleted.") #sucess message
             break
         
@@ -115,31 +112,37 @@ def update_role():
             found = True
             new_role = input("Enter New employee role: ")
             employee["role"] = new_role
+            save_employees()
             print(f"{employee['name']} role updated to {new_role}")
             break
     if not found:
         print("Employee not found ")
 
-#Remove availability from an employee
+#remove availabailty 
 def remove_availability():
     found = False
     search_name = input("Enter employee name: ")
+
     for employee in employees:
-       if employee["name"].lower() == search_name.lower():
-        found = True  # Employee found
-        available_to_remove = input("What availability do you want to remove? ")
-        if available_to_remove in employee["availability"]: # Check if availability exists
-            employee["availability"].remove(available_to_remove)
-            print(f"{available_to_remove} removed from {employee['name']}")
-            break
-        else: 
-           print("They dont work that day")
+        if employee["name"].lower() == search_name.lower():
+            found = True
+            available_to_remove = input("What availability do you want to remove? ")
+
+            if available_to_remove in employee["availability"]:
+                employee["availability"].remove(available_to_remove)
+                save_employees()
+                print(f"{available_to_remove} removed from {employee['name']}")
+                break
+            else:
+                print("They dont work that day")
+
     if not found:
-        print("Employee not found")            
+        print("Employee not found")         
 
 
 
 # Main menu loop
+load_employees()
 while True:
 
     print("\n--- ShiftFlow V1 ---")
