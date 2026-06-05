@@ -26,7 +26,7 @@ def add_employee():
     employee["availability"] = []  # Start with empty availability
 
     employees.append(employee)  # Add employee to list
-
+    print("Employee added")
 
 # Search for an employee by name
 def search_employee():
@@ -105,8 +105,22 @@ def update_role():
     if not found:
         print("Employee not found ")
 
-
-    
+#Remove availability from an employee
+def remove_availability():
+    found = False
+    search_name = input("Enter employee name: ")
+    for employee in employees:
+       if employee["name"].lower() == search_name.lower():
+        found = True  # Employee found
+        available_to_remove = input("What availability do you want to remove? ")
+        if available_to_remove in employee["availability"]: # Check if availability exists
+            employee["availability"].remove(available_to_remove)
+            print(f"{available_to_remove} removed from {employee['name']}")
+            break
+        else: 
+           print("They dont work that day")
+    if not found:
+        print("Employee not found")            
 
 
 
@@ -119,8 +133,9 @@ while True:
     print("3. View Employees")
     print("4. Update Employee Availability")
     print("5. Delete Employee")
-    print("6. Update Employee role")
-    print("7. Exit")
+    print("6. Update Employee Role")
+    print("7. Remove Employee Availabilty")
+    print("8. Exit")
 
    
     try:
@@ -146,8 +161,11 @@ while True:
     
     elif choice == 6:
         update_role()
-
+    
     elif choice == 7:
+        remove_availability()
+
+    elif choice == 8:
         print("Goodbye")
         break
 
