@@ -67,12 +67,17 @@ def update_availability():
             day = input("Enter employee day availability: ")  # Day to add
             time = input("Enter time: ")  # Time employee can work
             availability_entry = f"{day} {time}"  # Combines day and time
-            employee["availability"].append(availability_entry)  # Add day to availability
-            found = True  # Employee found
-            print(f"{availability_entry} added to {employee['name']}.") # Success message
+            found = True
+            if availability_entry in employee["availability"]: # check for duplicates
+                 print("Availability already exists")
+            else:
+                employee["availability"].append(availability_entry)  # Add day to availability
+            
+                print(f"{availability_entry} added to {employee['name']}.") # Success message
 
     if not found:
         print("Employee not found")
+
 
 
 #Delete employee
