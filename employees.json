@@ -2,7 +2,10 @@
     {
         "name": "Allen",
         "role": "SL",
-        "availability": []
+        "availability": [
+            "Monday 4-11:30",
+            "Wednesday 4-11:30"
+        ]
     },
     {
         "name": "John",

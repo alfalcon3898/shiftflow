@@ -59,6 +59,11 @@ def search_employee():
 def view_employees():
      for employee in employees:  # Loop through employee list
          print(f"{employee['name']} - {employee['role']}")  # Display name and role
+         print("Avalilability:")                         
+         for schedule in employee["availability"]: #go into the availability list
+             print(schedule)#print each day 
+         print("----------------")
+         
 
 
 # Update an employee's availability
