@@ -22,7 +22,11 @@ def add_employee():
 
     name = input("Enter employee name: ")  # Get employee name
     role = input("Enter employee role: ")  # Get employee role
-
+    for employee in employees:
+        if employee["name"].lower() == name.lower():
+            print("Employee already added")
+            return
+        
     employee["name"] = name  # Store employee name
     employee["role"] = role  # Store employee role
 
