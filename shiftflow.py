@@ -18,21 +18,19 @@ def save_employees():
 # Add a new employee to the employees list
 def add_employee():
 
-    employee = {}  # Create an empty employee dictionary
-
     name = input("Enter employee name: ")  # Get employee name
     role = input("Enter employee role: ")  # Get employee role
-    for employee in employees:
-        if employee["name"].lower() == name.lower():
+    for existing_employee in employees:
+        if existing_employee["name"].lower() == name.lower():
             print("Employee already added")
             return
-        
-    employee["name"] = name  # Store employee name
-    employee["role"] = role  # Store employee role
+    new_employee ={
+        "name": name,
+        "role": role,
+        "availability":[]
+    }    
 
-    employee["availability"] = []  # Start with empty availability
-
-    employees.append(employee)  # Add employee to list
+    employees.append(new_employee)  # Add employee to list
     save_employees()
     print("Employee added")
 
@@ -61,7 +59,16 @@ def search_employee():
 
 # Display all employees and their roles
 def view_employees():
-     for employee in employees:  # Loop through employee list
+     #creat a new sorted copy of the employe list
+     #sort by employee name (A-Z)
+     #.lower() make sorting ignore capital
+     
+     sorted_employees = sorted(
+         employees, 
+         key=lambda employee: employee["name"].lower()
+     )
+     
+     for employee in sorted_employees:  # Loop through employee list
          print(f"{employee['name']} - {employee['role']}")  # Display name and role
          print("Avalilability:")                         
          for schedule in employee["availability"]: #go into the availability list
@@ -148,7 +155,8 @@ def remove_availability():
     if not found:
         print("Employee not found")         
 
-
+def employee_count():
+    print(f"Total Employees: {len(employees)}")
 
 # Main menu loop
 load_employees()
@@ -162,7 +170,8 @@ while True:
     print("5. Delete Employee")
     print("6. Update Employee Role")
     print("7. Remove Employee Availabilty")
-    print("8. Exit")
+    print("8. print Number of employees")
+    print("9. Exit")
 
    
     try:
@@ -191,8 +200,10 @@ while True:
     
     elif choice == 7:
         remove_availability()
-
     elif choice == 8:
+        employee_count()
+
+    elif choice == 9:
         print("Goodbye")
         break
 

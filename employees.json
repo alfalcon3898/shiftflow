@@ -12,9 +12,10 @@
         "role": "Crew",
         "availability": []
     },
+    
     {
-        "name": "Luis",
-        "role": "SL",
+        "name": "ren",
+        "role": "sl",
         "availability": []
     }
 ]
