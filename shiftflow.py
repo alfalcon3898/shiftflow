@@ -187,6 +187,31 @@ def clear_availability():
     if not found:
         print("Employee not found")
 
+#Number of employee with certain role
+
+def number_role_types():
+    crew_count = 0
+    KL_count = 0
+    SL_count = 0
+    total_employees = len(employees)
+    for employee in employees:
+        if employee["role"].lower() == "crew":
+            crew_count += 1
+        elif employee["role"].lower() == "kl":
+            KL_count += 1
+        elif employee["role"].lower() == "sl":
+            SL_count += 1
+    print("-----Roles----")
+    print(f"crew:{crew_count}")
+    print(f"KL:{KL_count}")
+    print(f"SL:{SL_count}")
+    print(f"Number of employees: {total_employees}")
+
+    
+
+
+
+
 
 # Main menu loop
 load_employees()
@@ -203,7 +228,8 @@ while True:
     print("8. Remove Employee Availability")
     print("9. print Number of employees")
     print("10. Clear Availability")
-    print("11. Exit")
+    print("11. View amount of crew/sl/kl")
+    print("12. Exit")
 
    
     try:
@@ -240,6 +266,8 @@ while True:
     elif choice == 10:
         clear_availability() #clear availability
     elif choice == 11:
+        number_role_types()
+    elif choice == 12:
         print("Goodbye")
         break
 
