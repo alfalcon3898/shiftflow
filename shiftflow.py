@@ -1,4 +1,5 @@
 import json
+employees = []
 
 def load_employees():
     global employees
@@ -75,7 +76,22 @@ def view_employees():
              print(schedule)#print each day 
          print("----------------")
          
+#Show only one employee
+def view_employee():
+    found = False
+    search_name = input("Enter employee name: ")
+    for employee in employees:
+            if employee["name"].lower() == search_name.lower():
+                found = True
 
+                print(f"Name: {employee['name']}")  # Display name
+                print(f"Role: {employee['role']}")  # Display role
+                availability_text = ", ".join(employee["availability"])
+                print(f"Availability: {availability_text}")
+                break
+    if not found:
+        print("Employee not found")
+        
 
 # Update an employee's availability
 def update_availability():
@@ -158,6 +174,7 @@ def remove_availability():
 def employee_count():
     print(f"Total Employees: {len(employees)}")
 
+
 # Main menu loop
 load_employees()
 while True:
@@ -166,12 +183,13 @@ while True:
     print("1. Add Employee")
     print("2. Search Employee")
     print("3. View Employees")
-    print("4. Update Employee Availability")
-    print("5. Delete Employee")
-    print("6. Update Employee Role")
-    print("7. Remove Employee Availabilty")
-    print("8. print Number of employees")
-    print("9. Exit")
+    print("4  view employee")
+    print("5. Update Employee Availability")
+    print("6. Delete Employee")
+    print("7. Update Employee Role")
+    print("8. Remove Employee Availabilty")
+    print("9. print Number of employees")
+    print("10. Exit")
 
    
     try:
@@ -188,22 +206,25 @@ while True:
 
     elif choice == 3:
         view_employees()  # Show all employees
-
+    
     elif choice == 4:
+        view_employee()
+        
+    elif choice == 5:
         update_availability()  # Update availability
     
-    elif choice == 5:
+    elif choice == 6:
         delete_employee() #delete employee
     
-    elif choice == 6:
+    elif choice == 7:
         update_role()
     
-    elif choice == 7:
-        remove_availability()
     elif choice == 8:
+        remove_availability()
+    elif choice == 9:
         employee_count()
 
-    elif choice == 9:
+    elif choice == 10:
         print("Goodbye")
         break
 
