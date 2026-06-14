@@ -174,6 +174,19 @@ def remove_availability():
 def employee_count():
     print(f"Total Employees: {len(employees)}")
 
+def clear_availability():
+    found = False
+    search_name = input("Enter Employee name: ")
+    for employee in employees:
+        if employee["name"].lower() == search_name.lower():
+            found = True
+            employee["availability"].clear()
+            save_employees()
+            print(f"{employee['name']}'s availability was cleared.")
+            break
+    if not found:
+        print("Employee not found")
+
 
 # Main menu loop
 load_employees()
@@ -187,9 +200,10 @@ while True:
     print("5. Update Employee Availability")
     print("6. Delete Employee")
     print("7. Update Employee Role")
-    print("8. Remove Employee Availabilty")
+    print("8. Remove Employee Availability")
     print("9. print Number of employees")
-    print("10. Exit")
+    print("10. Clear Availability")
+    print("11. Exit")
 
    
     try:
@@ -217,14 +231,15 @@ while True:
         delete_employee() #delete employee
     
     elif choice == 7:
-        update_role()
+        update_role() #Upadate role
     
     elif choice == 8:
-        remove_availability()
+        remove_availability() #remove availability
     elif choice == 9:
-        employee_count()
-
+        employee_count() # count employee
     elif choice == 10:
+        clear_availability() #clear availability
+    elif choice == 11:
         print("Goodbye")
         break
 

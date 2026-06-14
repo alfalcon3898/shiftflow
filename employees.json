@@ -12,9 +12,18 @@
         "role": "Crew",
         "availability": []
     },
-    
     {
         "name": "ren",
+        "role": "sl",
+        "availability": []
+    },
+    {
+        "name": "& C:/Users/alnig/AppData/Local/Programs/Python/Python314/python.exe c:/Users/alnig/Documents/shiftflow/shiftflow.py",
+        "role": "& C:/Users/alnig/AppData/Local/Programs/Python/Python314/python.exe c:/Users/alnig/Documents/shiftflow/shiftflow.py",
+        "availability": []
+    },
+    {
+        "name": "jeff",
         "role": "sl",
         "availability": []
     }
