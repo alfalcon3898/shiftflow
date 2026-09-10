@@ -19,8 +19,21 @@ class Employee:
     def set_role(self, role:str) -> None:
         self.__role = role
 
-    def add_availability(self, availability_slot: str) -> None:
+    def add_availability(self, availability_slot: str) -> None: #add this time slot to the employee's availability list
         self.__availability.append(availability_slot)
+    
+    def remove_availability(self, availability_slot: str) -> None:
+         # check membership before removing — avoids a crash if the slot isn't present,
+         # and gives a clear, specific error instead of a generic Python exception
+         if availability_slot in self.__availability:
+                self.__availability.remove(availability_slot)
+         else: 
+            raise ValueError(f"{self.__name} does not have '{availability_slot}' in their availability.")
+         
+    def clear_availability(self) ->None:
+        self.__availability.clear()
+
+
 
 
 
