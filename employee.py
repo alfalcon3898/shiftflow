@@ -15,4 +15,7 @@ class Employee:
     def get_availability(self) ->list[str]:  
         return self.__availability
     
-    
+    # --- Setters ---
+    def set_role(self, role:str) -> None:
+        self.__role = role
+
