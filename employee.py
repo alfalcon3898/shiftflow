@@ -1,7 +1,14 @@
 class Employee:
     """Represents a single employee with encapsulated name, role, and availability data."""
     def __init__(self,name:str, role:str) -> None:
+        if name.strip() == "":
+            raise ValueError("Employee name cannot be empty.")
+        if len(name) > 100:
+            raise ValueError("Employee name is unreasonably long.")
         self.__name = name   # private — must go through get_name()
+
+
+
         self.__role = role   # private — must go through get_role()
 
         self.__availability = [] # private — starts empty, grows via add_availability()
