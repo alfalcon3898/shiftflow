@@ -13,8 +13,14 @@
         "availability": []
     },
     {
-        "name": "Luis",
-        "role": "SL",
+        "name": "ren",
+        "role": "sl",
+        "availability": []
+    },
+
+    {
+        "name": "jeff",
+        "role": "sl",
         "availability": []
     }
 ]

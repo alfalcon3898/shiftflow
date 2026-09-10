@@ -1,4 +1,5 @@
 import json
+employees = []
 
 def load_employees():
     global employees
@@ -18,21 +19,19 @@ def save_employees():
 # Add a new employee to the employees list
 def add_employee():
 
-    employee = {}  # Create an empty employee dictionary
-
     name = input("Enter employee name: ")  # Get employee name
     role = input("Enter employee role: ")  # Get employee role
-    for employee in employees:
-        if employee["name"].lower() == name.lower():
+    for existing_employee in employees:
+        if existing_employee["name"].lower() == name.lower():
             print("Employee already added")
             return
-        
-    employee["name"] = name  # Store employee name
-    employee["role"] = role  # Store employee role
+    new_employee ={
+        "name": name,
+        "role": role,
+        "availability":[]
+    }    
 
-    employee["availability"] = []  # Start with empty availability
-
-    employees.append(employee)  # Add employee to list
+    employees.append(new_employee)  # Add employee to list
     save_employees()
     print("Employee added")
 
@@ -61,14 +60,38 @@ def search_employee():
 
 # Display all employees and their roles
 def view_employees():
-     for employee in employees:  # Loop through employee list
+     #creat a new sorted copy of the employe list
+     #sort by employee name (A-Z)
+     #.lower() make sorting ignore capital
+     
+     sorted_employees = sorted(
+         employees, 
+         key=lambda employee: employee["name"].lower()
+     )
+     
+     for employee in sorted_employees:  # Loop through employee list
          print(f"{employee['name']} - {employee['role']}")  # Display name and role
          print("Avalilability:")                         
          for schedule in employee["availability"]: #go into the availability list
              print(schedule)#print each day 
          print("----------------")
          
+#Show only one employee
+def view_employee():
+    found = False
+    search_name = input("Enter employee name: ")
+    for employee in employees:
+            if employee["name"].lower() == search_name.lower():
+                found = True
 
+                print(f"Name: {employee['name']}")  # Display name
+                print(f"Role: {employee['role']}")  # Display role
+                availability_text = ", ".join(employee["availability"])
+                print(f"Availability: {availability_text}")
+                break
+    if not found:
+        print("Employee not found")
+        
 
 # Update an employee's availability
 def update_availability():
@@ -148,6 +171,46 @@ def remove_availability():
     if not found:
         print("Employee not found")         
 
+def employee_count():
+    print(f"Total Employees: {len(employees)}")
+
+def clear_availability():
+    found = False
+    search_name = input("Enter Employee name: ")
+    for employee in employees:
+        if employee["name"].lower() == search_name.lower():
+            found = True
+            employee["availability"].clear()
+            save_employees()
+            print(f"{employee['name']}'s availability was cleared.")
+            break
+    if not found:
+        print("Employee not found")
+
+#Number of employee with certain role
+
+def number_role_types():
+    crew_count = 0
+    KL_count = 0
+    SL_count = 0
+    total_employees = len(employees)
+    for employee in employees:
+        if employee["role"].lower() == "crew":
+            crew_count += 1
+        elif employee["role"].lower() == "kl":
+            KL_count += 1
+        elif employee["role"].lower() == "sl":
+            SL_count += 1
+    print("-----Roles----")
+    print(f"crew:{crew_count}")
+    print(f"KL:{KL_count}")
+    print(f"SL:{SL_count}")
+    print(f"Number of employees: {total_employees}")
+
+    
+
+
+
 
 
 # Main menu loop
@@ -158,11 +221,15 @@ while True:
     print("1. Add Employee")
     print("2. Search Employee")
     print("3. View Employees")
-    print("4. Update Employee Availability")
-    print("5. Delete Employee")
-    print("6. Update Employee Role")
-    print("7. Remove Employee Availabilty")
-    print("8. Exit")
+    print("4  view employee")
+    print("5. Update Employee Availability")
+    print("6. Delete Employee")
+    print("7. Update Employee Role")
+    print("8. Remove Employee Availability")
+    print("9. print Number of employees")
+    print("10. Clear Availability")
+    print("11. View amount of crew/sl/kl")
+    print("12. Exit")
 
    
     try:
@@ -179,20 +246,28 @@ while True:
 
     elif choice == 3:
         view_employees()  # Show all employees
-
+    
     elif choice == 4:
+        view_employee()
+        
+    elif choice == 5:
         update_availability()  # Update availability
     
-    elif choice == 5:
+    elif choice == 6:
         delete_employee() #delete employee
     
-    elif choice == 6:
-        update_role()
-    
     elif choice == 7:
-        remove_availability()
-
+        update_role() #Upadate role
+    
     elif choice == 8:
+        remove_availability() #remove availability
+    elif choice == 9:
+        employee_count() # count employee
+    elif choice == 10:
+        clear_availability() #clear availability
+    elif choice == 11:
+        number_role_types()
+    elif choice == 12:
         print("Goodbye")
         break
 
