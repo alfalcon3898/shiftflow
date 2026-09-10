@@ -19,3 +19,6 @@ class Employee:
     def set_role(self, role:str) -> None:
         self.__role = role
 
+    def add_availability(self, entry: str)-> None:
+        
+
