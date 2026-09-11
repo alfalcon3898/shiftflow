@@ -7,8 +7,9 @@ class Employee:
             raise ValueError("Employee name is unreasonably long.")
         self.__name = name   # private — must go through get_name()
 
-
-
+        if role.strip() == "":
+            raise ValueError("Role cannot be empty")
+        
         self.__role = role   # private — must go through get_role()
 
         self.__availability = [] # private — starts empty, grows via add_availability()
@@ -25,10 +26,14 @@ class Employee:
     # --- Setters ---
     def set_role(self, role:str) -> None:
         self.__role = role
+    
+    # --- Adder ---
 
     def add_availability(self, availability_slot: str) -> None: #add this time slot to the employee's availability list
         self.__availability.append(availability_slot)
     
+    #--- Remover --
+
     def remove_availability(self, availability_slot: str) -> None:
          # check membership before removing — avoids a crash if the slot isn't present,
          # and gives a clear, specific error instead of a generic Python exception
@@ -37,6 +42,7 @@ class Employee:
          else: 
             raise ValueError(f"{self.__name} does not have '{availability_slot}' in their availability.")
          
+    # --- Clearer --
     def clear_availability(self) ->None:
         self.__availability.clear()
 
