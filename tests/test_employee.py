@@ -29,3 +29,9 @@ def test_empty_role_raise_error():
 def test_long_role_raise_error():
     with pytest.raises(ValueError):
         Employee("Allen" , "a" * 51)
+
+def test_add_availability():
+    emp = Employee("Allen", "SL")
+    emp.add_availability("Monday, 4-11PM")
+    assert emp.get_availability() == ["Monday, 4-11PM"]
+   
