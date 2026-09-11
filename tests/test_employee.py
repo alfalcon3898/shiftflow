@@ -35,3 +35,8 @@ def test_add_availability():
     emp.add_availability("Monday, 4-11PM")
     assert emp.get_availability() == ["Monday, 4-11PM"]
    
+def test_remove_availability():
+    emp = Employee("Allen", "SL")
+    emp.add_availability("Monday, 4-11PM")
+    emp.remove_availability("Monday, 4-11PM")
+    assert emp.get_availability() == []
