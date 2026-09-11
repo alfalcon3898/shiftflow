@@ -25,3 +25,7 @@ def test_long_name_raise_error():
 def test_empty_role_raise_error():
     with pytest.raises(ValueError):
         Employee("Allen", "")
+
+def test_long_role_raise_error():
+    with pytest.raises(ValueError):
+        Employee("Allen" , "a" * 51)
