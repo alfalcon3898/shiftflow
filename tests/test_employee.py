@@ -17,3 +17,7 @@ def test_new_employee_has_empty_availability():
 def test_empty_name_raise_error():
     with pytest.raises(ValueError):
         Employee("", "SL")
+
+def test_long_name_raise_error():
+    with pytest.raises(ValueError):
+        Employee("a" * 101,"SL")
