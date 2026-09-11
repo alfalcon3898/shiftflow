@@ -54,3 +54,6 @@ def test_clear_availability():
     emp.clear_availability()
     assert emp.get_availability() == []
     
+def test_corrupted_v1_is_rejected():
+    with pytest.raises(ValueError):
+        Employee("& C:/Users/alnig/AppData/Local/Programs/Python/Python314/python.exe c:/Users/alnig/Documents/shiftflow/shiftflow.py","SL")
