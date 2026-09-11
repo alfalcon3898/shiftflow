@@ -25,6 +25,10 @@ class Employee:
     
     # --- Setters ---
     def set_role(self, role:str) -> None:
+        if role.strip() == "":
+            raise ValueError("Role cannot be empty")
+        if len(role) > 50:
+            raise ValueError("Role is unreasonably long.")
         self.__role = role
     
     # --- Adder ---
