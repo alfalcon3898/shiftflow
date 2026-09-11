@@ -7,4 +7,8 @@ def test_creates_employee_with_valid_data():
 def test_get_role_returns_correct_role():
     emp = Employee("Allen", "SL")
     assert emp.get_role() == "SL"
+
+def test_new_employee_has_empty_availability():
+    emp = Employee("Allen", "SL")
+    assert emp.get_availability() == []
     
