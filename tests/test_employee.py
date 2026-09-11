@@ -45,3 +45,12 @@ def test_remove_availabilty_raise_not_found_error():
     with pytest.raises(ValueError):
         emp = Employee("Allen","SL")
         emp.remove_availability("Monday, 4-11PM")
+
+def test_clear_availability():
+    emp = Employee("Allen", "SL")
+    emp.add_availability("Monday, 4-11PM")
+    emp.add_availability("Tuesday, 4-11PM")
+    emp.add_availability("Wednesday, 4-11PM")
+    emp.clear_availability()
+    assert emp.get_availability() == []
+    
