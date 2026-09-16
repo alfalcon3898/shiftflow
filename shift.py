@@ -1,5 +1,5 @@
 from employee import Employee
-from datetime import datetime
+from datetime import datetime, timedelta
 class Shift:
     def __init__(self, employee:Employee, date:str, start_time:str, end_time:str ) -> None:
         self.__employee = employee
@@ -24,7 +24,15 @@ class Shift:
         self.__start_time = start_time
     def set_end_time(self, end_time:str)-> None:
         self.__end_time = end_time
-    
+
+    def calculate_shift_hr(self) -> float:
+        start = datetime.strptime(self.__start_time, "%I:%M %p")
+        end = datetime.strptime(self.__end_time,"%I:%M %p")
+        if end < start:
+            end = end + timedelta(days=1)
+        duration = end - start
+        return duration.total_seconds() / 3600
+
     
     
 
