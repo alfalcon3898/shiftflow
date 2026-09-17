@@ -51,3 +51,8 @@ def test_shift_calculate_fractional_hrs():
     emp = Employee("Allen", "SL")
     shift = Shift(emp,"2026-09-17", "9:00 AM", "5:30 PM")
     assert shift.calculate_shift_hr() == 8.5
+
+def test_shift_rejects_invalid_employee():
+    emp = "Allen"
+    with pytest.raises(TypeError):
+         Shift(emp,"2026-09-17", "9:00 AM", "5:30 PM")
