@@ -36,3 +36,18 @@ def test_shift_set_end_time_rejects_invalid_time():
     with pytest.raises(ValueError):
         shift.set_end_time("Hello")
     assert shift.get_end_time() == "5:00 PM"
+
+def test_shift_calculate_daytime_hrs():
+    emp = Employee("Allen", "SL")
+    shift = Shift(emp,"2026-09-17", "9:00 AM", "5:00 PM")
+    assert shift.calculate_shift_hr() == 8.0
+
+def test_shift_calculate_overnight_time_hrs():
+    emp = Employee("Allen", "SL")
+    shift = Shift(emp,"2026-09-17", "11:00 PM", "7:00 AM")
+    assert shift.calculate_shift_hr() == 8.0
+
+def test_shift_calculate_fractional_hrs():
+    emp = Employee("Allen", "SL")
+    shift = Shift(emp,"2026-09-17", "9:00 AM", "5:30 PM")
+    assert shift.calculate_shift_hr() == 8.5
