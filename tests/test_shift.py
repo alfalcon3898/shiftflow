@@ -11,8 +11,28 @@ def test_shift_rejects_invalid_date():
 def test_shift_rejects_invalid_start_time():
     emp = Employee("Allen", "SL")
     with pytest.raises(ValueError):
-        Shift(emp,"2026-9-17", "hello", "5:00 PM")
+        Shift(emp,"2026-09-17", "hello", "5:00 PM")
 def test_shift_rejects_invalid_end_time():
     emp = Employee("Allen", "SL")
     with pytest.raises(ValueError):
-        Shift(emp,"2026-9-17", "9:00 AM", "Hello")
+        Shift(emp,"2026-09-17", "9:00 AM", "Hello")
+
+def test_shift_set_date_rejects_invalid_data():
+    emp = Employee("Allen","SL")
+    shift = Shift(emp,"2026-09-17", "9:00 AM", "5:00 PM")
+    with pytest.raises(ValueError):
+        shift.set_date("2026-02-30")
+    assert shift.get_date() == "2026-09-17"
+def test_shift_set_start_time_rejects_invalid_time():
+    emp = Employee("Allen", "SL")
+    shift = Shift(emp,"2026-09-17", "9:00 AM", "5:00 PM")
+    with pytest.raises(ValueError):
+        shift.set_start_time("Hello")
+    assert shift.get_start_time() == "9:00 AM"
+
+def test_shift_set_end_time_rejects_invalid_time():
+    emp = Employee("Allen", "SL")
+    shift = Shift(emp,"2026-09-17", "9:00 AM", "5:00 PM")
+    with pytest.raises(ValueError):
+        shift.set_end_time("Hello")
+    assert shift.get_end_time() == "5:00 PM"
