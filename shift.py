@@ -40,8 +40,7 @@ class Shift:
             end = end + timedelta(days=1)
         duration = end - start
         return duration.total_seconds() / 3600
+    
 
     
     
-
-

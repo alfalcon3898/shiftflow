@@ -56,3 +56,22 @@ def test_shift_rejects_invalid_employee():
     emp = "Allen"
     with pytest.raises(TypeError):
          Shift(emp,"2026-09-17", "9:00 AM", "5:30 PM")
+
+def test_shift_set_valid_date():
+    emp = Employee("Allen", "SL")
+    shift = Shift(emp, "2026-09-16", "9:00 AM", "5:00 PM")
+    shift.set_date("2026-09-17")
+    assert shift.get_date() == "2026-09-17"
+
+def test_shift_set_valid_start_time():
+    emp = Employee("Allen", "SL")
+    shift = Shift(emp, "2026-09-16", "9:00 AM", "5:00 PM")
+    shift.set_start_time("8:00 AM")
+    assert shift.get_start_time() == "8:00 AM"
+
+def test_shift_set_valid_end_time():
+    emp = Employee("Allen", "SL")
+    shift = Shift(emp, "2026-09-16", "9:00 AM", "5:00 PM")
+    shift.set_end_time("6:00 PM")
+    assert shift.get_end_time() == "6:00 PM"
+
