@@ -1,6 +1,7 @@
 from employee import Employee
 from datetime import datetime, timedelta
 class Shift:
+    """Represents an employee's scheduled shift and calculates its duration."""
     def __init__(self, employee:Employee, date:str, start_time:str, end_time:str ) -> None:
         if not isinstance(employee, Employee):
             raise TypeError("Employee must be an Employee object.")
