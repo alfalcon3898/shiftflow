@@ -11,6 +11,9 @@ class Schedule:
 
     def get_shifts(self)->list:
         return self.__shifts.copy()
+    def remove_shift(self,shift:Shift)->None:
+        self.__shifts.remove(shift)
+
     
 
 
