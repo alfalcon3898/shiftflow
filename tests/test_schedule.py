@@ -36,3 +36,10 @@ def test_remove_shift():
     schedule.add_shift(shift)
     schedule.remove_shift(shift)
     assert schedule.get_shifts() == []
+
+def test_raise_error_removing_shift_from_empty_list():
+    emp = Employee("Allen", "SL")
+    shift = Shift(emp, "2026-09-17", "9:00 AM", "5:00 PM")
+    schedule = Schedule()
+    with pytest.raises(ValueError):
+        schedule.remove_shift(shift)
