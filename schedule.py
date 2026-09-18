@@ -1,7 +1,6 @@
-from employee import Employee
 from shift import Shift
-from datetime import datetime, timedelta
 class Schedule:
+    """Manages a collection of employee shifts."""
     def __init__(self) -> None:
         self.__shifts = []
     def add_shift(self, shift:Shift)->None:
