@@ -11,10 +11,9 @@ class Schedule:
     def get_shifts(self)->list:
         return self.__shifts.copy()
     def remove_shift(self,shift:Shift)->None:
-         if not isinstance(shift,Shift):
+        if not isinstance(shift,Shift):
             raise TypeError("Shift must be a Shift object.")
-         
-         self.__shifts.remove(shift)
+        self.__shifts.remove(shift)
 
 
 
