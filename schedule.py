@@ -14,6 +14,6 @@ class Schedule:
     def remove_shift(self,shift:Shift)->None:
         self.__shifts.remove(shift)
 
-    
+
 
 

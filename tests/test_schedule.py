@@ -53,3 +53,11 @@ def test_removing_a_shift_that_is_not_added_to_schedule():
         schedule.remove_shift(shift_b)
     assert shift_a in schedule.get_shifts()
 
+def test_schedule_integration():
+    emp = Employee("Allen", "SL")
+    shift = Shift(emp, "2026-09-17", "9:00 AM", "5:00 PM")
+    schedule = Schedule()
+    schedule.add_shift(shift)
+    assert shift in schedule.get_shifts()
+    stored_shift = schedule.get_shifts()[0]
+    assert stored_shift.get_date() == "2026-09-17"
