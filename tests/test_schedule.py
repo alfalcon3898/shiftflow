@@ -61,3 +61,12 @@ def test_schedule_integration():
     assert shift in schedule.get_shifts()
     stored_shift = schedule.get_shifts()[0]
     assert stored_shift.get_date() == "2026-09-17"
+
+def test_remove_shift_rejects_invalid_type():
+    emp = Employee("Allen", "SL")
+    shift = Shift(emp, "2026-09-17", "9:00 AM", "5:00 PM")
+    schedule = Schedule()
+    schedule.add_shift(shift)
+    with pytest.raises(TypeError):
+        schedule.remove_shift("Allen")
+
