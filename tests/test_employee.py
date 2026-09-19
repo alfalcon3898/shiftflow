@@ -57,3 +57,12 @@ def test_clear_availability():
 def test_corrupted_v1_is_rejected():
     with pytest.raises(ValueError):
         Employee("& C:/Users/alnig/AppData/Local/Programs/Python/Python314/python.exe c:/Users/alnig/Documents/shiftflow/shiftflow.py","SL")
+
+def test_get_availability_returns_copy():
+    employee = Employee("Allen", "SL")
+    employee.add_availability("Monday")
+
+    availability = employee.get_availability()
+    availability.clear()
+
+    assert employee.get_availability() == ["Monday"]

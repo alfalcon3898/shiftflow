@@ -24,7 +24,8 @@ class Employee:
     def get_role(self) -> str:
         return self.__role
     def get_availability(self) ->list[str]:  
-        return self.__availability
+         """Return a copy of the employee's availability."""
+         return self.__availability.copy()
     
     # --- Setters ---
     def set_role(self, role:str) -> None:
