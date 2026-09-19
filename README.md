@@ -8,9 +8,22 @@ As a manager, I've seen firsthand how much time gets lost building schedules by 
 
 ## Status
 
-**Current version: V1 (in progress toward V2)**
+**Current development: Enhancement 1 — Software Design & Engineering**
 
-V1 is a functional, procedural Python CLI application. It manages employees and their stated availability, but does not yet include actual shift scheduling, conflict detection, or a database backend — those are planned enhancements (see below).
+ShiftFlow V1 is a functional, procedural Python CLI application preserved on the `main` branch. It manages employee records and availability using a local JSON file.
+
+The `enhancement-1-oop` branch introduces three object-oriented classes:
+
+* `Employee` — encapsulates employee information, validates names and roles, and manages availability.
+* `Shift` — represents an assigned shift, validates date and time formats, and calculates shift duration.
+* `Schedule` — manages a private collection of shifts through methods for adding, viewing, and removing shifts.
+
+The refactored classes currently use in-memory list storage. This design keeps Enhancement 1 focused on object-oriented programming, encapsulation, validation, and testing.
+
+**Testing:** 35 automated tests passed in the latest confirmed run.
+
+The OOP classes are implemented, but integration with the original CLI and persistence has not yet been confirmed. Advanced scheduling algorithms and SQLite migration are reserved for later enhancements.
+
 
 ## Features (V1)
 
@@ -28,38 +41,145 @@ V1 is a functional, procedural Python CLI application. It manages employees and 
 
 ## Tech Stack
 
-- **Language:** Python 3
-- **Storage:** JSON (flat file) — planned migration to SQLite
-- **Interface:** Command-line menu
+* **Language:** Python 3
+* **Original application:** Procedural command-line interface (V1)
+* **Enhancement 1 architecture:** Object-oriented design using `Employee`, `Shift`, and `Schedule` classes
+* **Storage:** JSON file (`employees.json`) in V1; in-memory lists in the current OOP implementation
+* **Testing:** `pytest`
+* **Planned database:** SQLite (Enhancement 3)
 
 ## How to Run
 
-1. Make sure Python 3 is installed.
-2. Clone or download this repository.
-3. Run the script from a terminal:
-   ```
-   python shiftflow.py
-   ```
-4. Use the on-screen numbered menu to add employees, manage availability, and more. Data is automatically saved to `employees.json` after any change.
+### Run the original V1 application
 
-## Known Limitations (V1)
+1. Install Python 3.
+2. Clone or download the repository.
+3. Switch to the `main` branch.
+4. Run the application:
 
-This version is intentionally simple, and enhancing it is the focus of ongoing work:
+```bash
+python shiftflow.py
+```
 
-- No object-oriented structure — employees are represented as plain dictionaries, not classes
-- Minimal input validation — invalid or malformed input can currently be saved without being caught
-- No automated tests
-- No actual shift/schedule concept yet — only employee availability is tracked, not assigned shifts
-- No conflict detection, since there is no scheduling logic yet to have conflicts in
-- Data stored in a flat JSON file, with no schema or relational integrity
+5. Follow the numbered command-line menu to manage employees and availability.
+
+V1 saves employee data to `employees.json`.
+
+### Review the OOP enhancement
+
+Switch to the enhancement branch:
+
+```bash
+git switch enhancement-1-oop
+```
+
+The refactored implementation is organized into three Python files:
+
+* `employee.py` — employee information, validation, and availability management.
+* `shift.py` — shift information, date/time validation, and duration calculations.
+* `schedule.py` — adding, retrieving, and removing shifts.
+
+These classes currently provide the foundation for the scheduling system. A complete command-line interface for the refactored version has not yet been confirmed.
+
+### Run the automated tests
+
+From the project directory, install `pytest` if necessary:
+
+```bash
+python -m pip install pytest
+```
+
+Then run:
+
+```bash
+python -m pytest -q
+```
+
+The latest confirmed test run completed with **35 passing tests**.
+
+The test suite covers the `Employee`, `Shift`, and `Schedule` classes, including validation, shift-duration calculations, collection management, and encapsulation.
+
+## Known Limitations and Current Progress
+
+### Original V1 limitations
+
+The original version of ShiftFlow has several limitations that motivated the capstone enhancements:
+
+* Employees are represented as dictionaries rather than objects.
+* Input validation is limited, allowing malformed employee information to enter the system.
+* There are no automated tests.
+* The application tracks employee availability but does not represent assigned shifts.
+* There is no scheduling conflict detection.
+* Employee data is stored in a flat JSON file rather than a relational database.
+
+### Improvements implemented in Enhancement 1
+
+The object-oriented refactor addresses several of these limitations:
+
+* Introduced separate `Employee`, `Shift`, and `Schedule` classes.
+* Encapsulated employee information and shift collections using private attributes.
+* Added validation for employee names, roles, shift dates, and time formats.
+* Added methods for managing employee availability and scheduled shifts.
+* Added shift-duration calculations, including overnight shifts.
+* Added automated tests using `pytest`, with 35 tests passing in the latest confirmed run.
+* Protected internal collections by returning copies from `Employee.get_availability()` and `Schedule.get_shifts()`.
+
+The refactored classes currently use in-memory lists. Integration with the original command-line interface and persistent storage has not yet been confirmed.
+
+Advanced scheduling algorithms and database functionality remain outside the current enhancement.
 
 ## Planned Enhancements
 
-ShiftFlow is being actively developed in three stages:
+ShiftFlow is being developed through three capstone enhancement categories.
 
-1. **Software Design & Engineering** — refactor into an object-oriented design (`Employee`, `Shift`, `Schedule` classes), add encapsulation, proper error handling, and automated tests with `pytest`.
-2. **Algorithms & Data Structures** — build real shift/schedule logic, including conflict detection, coverage checking, overtime tracking, a shift-swap request feature, and a seniority-and-preference-based fair hour distribution algorithm that reflects real labor-budget constraints.
-3. **Databases** — migrate from JSON to a normalized SQLite schema (employees, shifts, roles, availability tables), with all data access routed through a proper database layer.
+### Enhancement 1: Software Design & Engineering
+
+**Status: Core OOP implementation completed; documentation and final review in progress.**
+
+Refactor the original procedural application into an object-oriented design.
+
+Implemented improvements include:
+
+* `Employee`, `Shift`, and `Schedule` classes.
+* Encapsulation through private attributes and public methods.
+* Input validation and explicit error handling.
+* Automated unit and integration tests using `pytest`.
+* In-memory list storage to keep the initial design simple.
+
+The current implementation provides a foundation for future scheduling functionality.
+
+Remaining work includes final documentation, the enhancement narrative, and verification against the assignment rubric.
+
+### Enhancement 2: Algorithms & Data Structures
+
+**Status: Planned.**
+
+Develop scheduling functionality using the object-oriented foundation established in Enhancement 1.
+
+Planned features include:
+
+* Detecting overlapping employee shifts.
+* Checking staffing coverage.
+* Tracking scheduled hours and identifying potential overtime.
+* Supporting shift-swap requests.
+* Distributing hours using employee preferences, seniority, and labor-budget constraints.
+
+These features will introduce scheduling rules beyond the basic creation and management of shift objects.
+
+### Enhancement 3: Databases
+
+**Status: Planned.**
+
+Replace flat-file and temporary in-memory storage with a relational database.
+
+Planned improvements include:
+
+* Migrating persistent data storage to SQLite.
+* Designing normalized tables for employees, shifts, roles, and availability.
+* Introducing a database access layer.
+* Supporting reliable storage and retrieval of employee and scheduling information.
+
+The database enhancement will build on the object-oriented architecture developed in Enhancement 1.
 
 ## Long-Term Vision (Beyond the Capstone)
 
