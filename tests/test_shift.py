@@ -75,3 +75,34 @@ def test_shift_set_valid_end_time():
     shift.set_end_time("6:00 PM")
     assert shift.get_end_time() == "6:00 PM"
 
+def test_overlapping_shift():
+    emp = Employee("Allen", "SL")
+    shift_A = Shift(emp,"2026-09-16", "9:00 AM", "5:00 PM")
+    shift_B = Shift(emp,"2026-09-16", "10:00 AM", "6:00 PM")
+    assert shift_A.conflicts_with(shift_B) is True
+
+def test_no_overlapping_shift_with_gap():
+    emp = Employee("Allen", "SL")
+    shift_A = Shift(emp,"2026-09-16", "9:00 AM", "3:00 PM")
+    shift_B = Shift(emp,"2026-09-16", "4:00 PM", "6:00 PM")
+    assert shift_A.conflicts_with(shift_B) is False
+
+def test_overlaping_but_diffrent_employee():
+    emp_A = Employee("Allen", "SL")
+    emp_B = Employee("Terry", "SL")
+    shift_A = Shift(emp_B,"2026-09-16", "9:00 AM", "5:00 PM")
+    shift_B = Shift(emp_A,"2026-09-16", "10:00 AM", "6:00 PM")
+    assert shift_A.conflicts_with(shift_B) is False
+   
+
+def test_no_overlapping_but_shift_are_back_to_back():
+     emp = Employee("Allen", "SL")
+     shift_A = Shift(emp,"2026-09-16", "9:00 AM", "12:00 PM")
+     shift_B = Shift(emp,"2026-09-16", "12:00 PM", "5:00 PM")
+     assert shift_A.conflicts_with(shift_B) is False
+
+def test_shift_crossing_midnight_overlap_conflict():
+    emp = Employee("Allen", "SL")
+    shift_A = Shift(emp,"2026-09-16", "11:00 PM", "7:00 AM")
+    shift_B = Shift(emp,"2026-09-17", "6:00 AM", "2:00 PM")
+    assert shift_A.conflicts_with(shift_B) is True

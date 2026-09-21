@@ -89,3 +89,52 @@ class Shift:
         # Convert the duration from seconds to hours.
         # Dividing by 3600 returns a float, such as 7.5 hours.
         return duration.total_seconds() / 3600
+
+    def conflicts_with(self, other: "Shift") -> bool:
+        #convert the current shift's date and time
+        start = datetime.strptime(
+            f"{self.__date} {self.__start_time}",
+            "%Y-%m-%d %I:%M %p"
+        )
+
+        end = datetime.strptime(
+            f"{self.__date} {self.__end_time}",
+            "%Y-%m-%d %I:%M %p"
+        )
+
+        # Handle an overnight shift.
+        if end < start:
+            end = end + timedelta(days=1)
+
+        # Retrieve the other shift's information.
+        other_date = other.get_date()
+        other_start_time = other.get_start_time()
+        other_end_time = other.get_end_time()
+
+         # Convert the other shift's date and times.
+        other_start = datetime.strptime(
+            f"{other_date} {other_start_time}",
+            "%Y-%m-%d %I:%M %p"
+        )
+
+        other_end = datetime.strptime(
+            f"{other_date} {other_end_time}",
+            "%Y-%m-%d %I:%M %p"
+        )
+
+        # Handle an overnight shift for the other employee's shift.
+        if other_end < other_start:
+            other_end = other_end + timedelta(days=1)
+
+        # If the shifts belong to different employees,
+        # they cannot conflict with each other.
+        # Stop checking and return False.
+        if self.get_employee() is not other.get_employee():
+         return False
+
+        # Check whether the two shifts overlap.
+        # Shift A must start before Shift B ends,
+        # AND Shift B must start before Shift A ends.
+        # Both conditions must be True for a conflict.
+        return start < other_end and other_start < end
+
