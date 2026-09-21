@@ -16,7 +16,9 @@ class Schedule:
         # from being added to the schedule.
         if not isinstance(shift, Shift):
             raise TypeError("Shift must be a Shift object.")
-
+        for existing_shift in self.__shifts:
+            if shift.conflicts_with(existing_shift):
+                raise ValueError("Shift cannot be added becuase it conflict with another shift")
         # Add the validated Shift object to the schedule.
         self.__shifts.append(shift)
 

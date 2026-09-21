@@ -1,0 +1,283 @@
+[1mdiff --git a/employee.py b/employee.py[m
+[1mindex 6dfffe1..a51e365 100644[m
+[1m--- a/employee.py[m
+[1m+++ b/employee.py[m
+[36m@@ -1,61 +1,80 @@[m
+ class Employee:[m
+     """Represents a single employee with encapsulated name, role, and availability data."""[m
+[31m-    def __init__(self,name:str, role:str) -> None:[m
+[32m+[m
+[32m+[m[32m    def __init__(self, name: str, role: str) -> None:[m
+[32m+[m[32m        # Validate the employee's name before storing it.[m
+[32m+[m[32m        # Reject blank names and names exceeding the 100-character limit.[m
+         if name.strip() == "":[m
+             raise ValueError("Employee name cannot be empty.")[m
+[32m+[m
+         if len(name) > 100:[m
+             raise ValueError("Employee name is unreasonably long.")[m
+[31m-        self.__name = name   # private — must go through get_name()[m
+ [m
+[32m+[m[32m        # Keep the name private so it is accessed through get_name().[m
+[32m+[m[32m        self.__name = name[m
+[32m+[m
+[32m+[m[32m        # Validate the employee's role before storing it.[m
+         if role.strip() == "":[m
+             raise ValueError("Role cannot be empty")[m
+[32m+[m
+         if len(role) > 50:[m
+             raise ValueError("Role is unreasonably long.")[m
+[31m-        [m
+[31m-        [m
+[31m-        self.__role = role   # private — must go through get_role()[m
+ [m
+[31m-        self.__availability = [] # private — starts empty, grows via add_availability()[m
+[31m-    [m
+[32m+[m[32m        # Keep the role private so updates go through set_role(),[m
+[32m+[m[32m        # which applies the same validation rules.[m
+[32m+[m[32m        self.__role = role[m
+[32m+[m
+[32m+[m[32m        # Each employee starts with an empty availability list.[m
+[32m+[m[32m        # Availability is managed through the methods below.[m
+[32m+[m[32m        self.__availability = [][m
+[32m+[m
+     # --- Getters ---[m
+ [m
+     def get_name(self) -> str:[m
+[32m+[m[32m        # Return the employee's name without allowing it to be changed here.[m
+         return self.__name[m
+[32m+[m
+     def get_role(self) -> str:[m
+[32m+[m[32m        # Return the employee's current role.[m
+         return self.__role[m
+[31m-    def get_availability(self) ->list[str]:  [m
+[31m-         """Return a copy of the employee's availability."""[m
+[31m-         return self.__availability.copy()[m
+[31m-    [m
+[32m+[m
+[32m+[m[32m    def get_availability(self) -> list[str]:[m
+[32m+[m[32m        """Return a copy of the employee's availability."""[m
+[32m+[m
+[32m+[m[32m        # Returning a copy prevents callers from modifying the internal list[m
+[32m+[m[32m        # without using the Employee class's availability methods.[m
+[32m+[m[32m        return self.__availability.copy()[m
+[32m+[m
+     # --- Setters ---[m
+[31m-    def set_role(self, role:str) -> None:[m
+[32m+[m
+[32m+[m[32m    def set_role(self, role: str) -> None:[m
+[32m+[m[32m        # Apply the same validation used during initialization.[m
+[32m+[m[32m        # An invalid role is rejected before the existing role is replaced.[m
+         if role.strip() == "":[m
+             raise ValueError("Role cannot be empty")[m
+[32m+[m
+         if len(role) > 50:[m
+             raise ValueError("Role is unreasonably long.")[m
+[32m+[m
+[32m+[m[32m        # Update the role only after it passes validation.[m
+         self.__role = role[m
+[31m-    [m
+[31m-    # --- Adder ---[m
+ [m
+[31m-    def add_availability(self, availability_slot: str) -> None: #add this time slot to the employee's availability list[m
+[32m+[m[32m    # --- Availability Management ---[m
+[32m+[m
+[32m+[m[32m    def add_availability(self, availability_slot: str) -> None:[m
+[32m+[m[32m        # Append a new availability entry to this employee's private list.[m
+         self.__availability.append(availability_slot)[m
+[31m-    [m
+[31m-    #--- Remover --[m
+ [m
+     def remove_availability(self, availability_slot: str) -> None:[m
+[31m-         # check membership before removing — avoids a crash if the slot isn't present,[m
+[31m-         # and gives a clear, specific error instead of a generic Python exception[m
+[31m-         if availability_slot in self.__availability:[m
+[31m-                self.__availability.remove(availability_slot)[m
+[31m-         else: [m
+[31m-            raise ValueError(f"{self.__name} does not have '{availability_slot}' in their availability.")[m
+[31m-         [m
+[31m-    # --- Clearer --[m
+[31m-    def clear_availability(self) ->None:[m
+[31m-        self.__availability.clear()[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-[m
+[32m+[m[32m        # Check whether the requested entry exists before removing it.[m
+[32m+[m[32m        if availability_slot in self.__availability:[m
+[32m+[m[32m            self.__availability.remove(availability_slot)[m
+[32m+[m[32m        else:[m
+[32m+[m[32m            # Provide a specific error identifying the missing entry.[m
+[32m+[m[32m            raise ValueError([m
+[32m+[m[32m                f"{self.__name} does not have '{availability_slot}' in their availability."[m
+[32m+[m[32m            )[m
+ [m
+[32m+[m[32m    def clear_availability(self) -> None:[m
+[32m+[m[32m        # Remove all availability entries while keeping the same list object.[m
+[32m+[m[32m        self.__availability.clear()[m
+\ No newline at end of file[m
+[1mdiff --git a/schedule.py b/schedule.py[m
+[1mindex aa63758..4a39eed 100644[m
+[1m--- a/schedule.py[m
+[1m+++ b/schedule.py[m
+[36m@@ -1,20 +1,39 @@[m
+ from shift import Shift[m
+[32m+[m
+[32m+[m
+ class Schedule:[m
+     """Manages a collection of employee shifts."""[m
+[32m+[m
+     def __init__(self) -> None:[m
+[32m+[m[32m        # Store scheduled shifts in a private list.[m
+[32m+[m[32m        # Shifts are added and removed through the methods below.[m
+         self.__shifts = [][m
+[31m-    def add_shift(self, shift:Shift)->None:[m
+[31m-        if not isinstance(shift,Shift):[m
+[32m+[m
+[32m+[m[32m    # --- Add Shift ---[m
+[32m+[m
+[32m+[m[32m    def add_shift(self, shift: Shift) -> None:[m
+[32m+[m[32m        # Only accept Shift objects to prevent unrelated data[m
+[32m+[m[32m        # from being added to the schedule.[m
+[32m+[m[32m        if not isinstance(shift, Shift):[m
+             raise TypeError("Shift must be a Shift object.")[m
+[32m+[m
+[32m+[m[32m        # Add the validated Shift object to the schedule.[m
+         self.__shifts.append(shift)[m
+ [m
+[31m-    def get_shifts(self)->list:[m
+[31m-        return self.__shifts.copy()[m
+[31m-    def remove_shift(self,shift:Shift)->None:[m
+[31m-        if not isinstance(shift,Shift):[m
+[31m-            raise TypeError("Shift must be a Shift object.")[m
+[31m-        self.__shifts.remove(shift)[m
+[32m+[m[32m    # --- Get Shifts ---[m
+ [m
+[32m+[m[32m    def get_shifts(self) -> list:[m
+[32m+[m[32m        # Return a copy so callers cannot directly add or remove[m
+[32m+[m[32m        # entries from the schedule's private list.[m
+[32m+[m[32m        return self.__shifts.copy()[m
+ [m
+[32m+[m[32m    # --- Remove Shift ---[m
+ [m
+[32m+[m[32m    def remove_shift(self, shift: Shift) -> None:[m
+[32m+[m[32m        # Reject values that are not Shift objects.[m
+[32m+[m[32m        if not isinstance(shift, Shift):[m
+[32m+[m[32m            raise TypeError("Shift must be a Shift object.")[m
+ [m
+[32m+[m[32m        # Remove the specified shift from the schedule.[m
+[32m+[m[32m        # Python raises ValueError if the shift is not present.[m
+[32m+[m[32m        self.__shifts.remove(shift)[m
+\ No newline at end of file[m
+[1mdiff --git a/shift.py b/shift.py[m
+[1mindex 7492d63..858418b 100644[m
+[1m--- a/shift.py[m
+[1m+++ b/shift.py[m
+[36m@@ -1,47 +1,91 @@[m
+ from employee import Employee[m
+ from datetime import datetime, timedelta[m
+[32m+[m
+[32m+[m
+ class Shift:[m
+     """Represents an employee's scheduled shift and calculates its duration."""[m
+[31m-    def __init__(self, employee:Employee, date:str, start_time:str, end_time:str ) -> None:[m
+[32m+[m
+[32m+[m[32m    def __init__([m
+[32m+[m[32m        self,[m
+[32m+[m[32m        employee: Employee,[m
+[32m+[m[32m        date: str,[m
+[32m+[m[32m        start_time: str,[m
+[32m+[m[32m        end_time: str[m
+[32m+[m[32m    ) -> None:[m
+[32m+[m
+[32m+[m[32m        # Require an Employee object rather than an employee name or dictionary.[m
+[32m+[m[32m        # This keeps each shift associated with an actual Employee instance.[m
+         if not isinstance(employee, Employee):[m
+             raise TypeError("Employee must be an Employee object.")[m
+[32m+[m
+         self.__employee = employee[m
+[32m+[m
+[32m+[m[32m        # Check that the date follows the YYYY-MM-DD format.[m
+[32m+[m[32m        # strptime() raises ValueError if the date cannot be parsed.[m
+         datetime.strptime(date, "%Y-%m-%d")[m
+         self.__date = date[m
+[32m+[m
+[32m+[m[32m        # Validate the start time using a 12-hour clock with AM/PM.[m
+[32m+[m[32m        # Example: "11:00 PM"[m
+         datetime.strptime(start_time, "%I:%M %p")[m
+         self.__start_time = start_time[m
+[32m+[m
+[32m+[m[32m        # Apply the same format validation to the end time.[m
+         datetime.strptime(end_time, "%I:%M %p")[m
+         self.__end_time = end_time[m
+ [m
+[31m-    #--- Getters---[m
+[31m-    def get_employee(self)->Employee:[m
+[32m+[m[32m    # --- Getters ---[m
+[32m+[m
+[32m+[m[32m    def get_employee(self) -> Employee:[m
+[32m+[m[32m        # Return the Employee object assigned to this shift.[m
+         return self.__employee[m
+[31m-    def get_date(self)->str:[m
+[32m+[m
+[32m+[m[32m    def get_date(self) -> str:[m
+[32m+[m[32m        # Return the scheduled date as a string.[m
+         return self.__date[m
+[31m-    def get_start_time(self)->str:[m
+[32m+[m
+[32m+[m[32m    def get_start_time(self) -> str:[m
+[32m+[m[32m        # Return the shift's starting time.[m
+         return self.__start_time[m
+[31m-    def get_end_time(self)->str:[m
+[32m+[m
+[32m+[m[32m    def get_end_time(self) -> str:[m
+[32m+[m[32m        # Return the shift's ending time.[m
+         return self.__end_time[m
+ [m
+[31m-    #---Setters---[m
+[31m-    def set_date(self,date:str)-> None:[m
+[32m+[m[32m    # --- Setters ---[m
+[32m+[m
+[32m+[m[32m    def set_date(self, date: str) -> None:[m
+[32m+[m[32m        # Validate the new date before replacing the existing value.[m
+         datetime.strptime(date, "%Y-%m-%d")[m
+         self.__date = date[m
+[31m-    def set_start_time(self, start_time:str)-> None:[m
+[32m+[m
+[32m+[m[32m    def set_start_time(self, start_time: str) -> None:[m
+[32m+[m[32m        # Reject an invalid time before updating the shift.[m
+         datetime.strptime(start_time, "%I:%M %p")[m
+         self.__start_time = start_time[m
+[31m-    def set_end_time(self, end_time:str)-> None:[m
+[32m+[m
+[32m+[m[32m    def set_end_time(self, end_time: str) -> None:[m
+[32m+[m[32m        # Apply the same validation to the new ending time.[m
+         datetime.strptime(end_time, "%I:%M %p")[m
+         self.__end_time = end_time[m
+ [m
+[32m+[m[32m    # --- Shift Duration ---[m
+[32m+[m
+     def calculate_shift_hr(self) -> float:[m
+[32m+[m[32m        # Convert the stored time strings into datetime objects[m
+[32m+[m[32m        # so Python can calculate the difference between them.[m
+         start = datetime.strptime(self.__start_time, "%I:%M %p")[m
+[31m-        end = datetime.strptime(self.__end_time,"%I:%M %p")[m
+[32m+[m[32m        end = datetime.strptime(self.__end_time, "%I:%M %p")[m
+[32m+[m
+[32m+[m[32m        # If the end time is earlier than the start time, treat the[m
+[32m+[m[32m        # shift as overnight and move its end time to the next day.[m
+[32m+[m[32m        # Example: 11:00 PM to 7:00 AM becomes an 8-hour shift.[m
+         if end < start:[m
+             end = end + timedelta(days=1)[m
+[32m+[m
+[32m+[m[32m        # Subtract the start time from the adjusted end time.[m
+         duration = end - start[m
+[31m-        return duration.total_seconds() / 3600[m
+[31m-    [m
+ [m
+[31m-    [m
+[31m-    [m
+[32m+[m[32m        # Convert the duration from seconds to hours.[m
+[32m+[m[32m        # Dividing by 3600 returns a float, such as 7.5 hours.[m
+[32m+[m[32m        return duration.total_seconds() / 3600[m
+\ No newline at end of file[m

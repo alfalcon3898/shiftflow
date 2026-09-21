@@ -70,3 +70,12 @@ def test_remove_shift_rejects_invalid_type():
     with pytest.raises(TypeError):
         schedule.remove_shift("Allen")
 
+def test_add_shift_rejects_duplicate():
+    emp = Employee("Allen", "SL")
+    shift = Shift(emp, "2026-09-17", "9:00 AM", "5:00 PM")
+    schedule = Schedule()
+    schedule.add_shift(shift)
+    with pytest.raises(ValueError):
+        shift_a = Shift(emp, "2026-09-17", "9:00 AM", "5:00 PM")
+        schedule.add_shift(shift_a)
+    assert len(schedule.get_shifts()) == 1
