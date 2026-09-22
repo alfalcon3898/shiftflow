@@ -1,5 +1,6 @@
 import pytest
 from employee import Employee
+from employee import AvailabilityStatus
 
 
 def test_creates_employee_with_valid_data():
@@ -66,3 +67,9 @@ def test_get_availability_returns_copy():
     availability.clear()
 
     assert employee.get_availability() == ["Monday"]
+
+def test_availability_status_values():
+    assert AvailabilityStatus.AVAILABLE.value == "available to work" 
+    assert AvailabilityStatus.UNAVAILABLE.value == "unavailable to work" 
+    assert AvailabilityStatus.UNKNOWN.value == "availability not entered"
+    

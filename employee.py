@@ -1,3 +1,11 @@
+from enum import Enum
+class AvailabilityStatus(Enum):
+        AVAILABLE = "available to work" 
+        UNAVAILABLE = "unavailable to work" 
+        UNKNOWN = "availability not entered"
+     
+
+
 class Employee:
     """Represents a single employee with encapsulated name, role, and availability data."""
 
