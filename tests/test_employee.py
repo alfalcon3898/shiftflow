@@ -11,10 +11,6 @@ def test_get_role_returns_correct_role():
     emp = Employee("Allen", "SL")
     assert emp.get_role() == "SL"
 
-def test_new_employee_has_empty_availability():
-    emp = Employee("Allen", "SL")
-    assert emp.get_availability() == []
-
 def test_empty_name_raise_error():
     with pytest.raises(ValueError):
         Employee("", "SL")
@@ -33,43 +29,55 @@ def test_long_role_raise_error():
 
 def test_add_availability():
     emp = Employee("Allen", "SL")
-    emp.add_availability("Monday, 4-11PM")
-    assert emp.get_availability() == ["Monday, 4-11PM"]
+    emp.add_availability("Monday", ("4:00 PM", "11:00 PM"))
+    assert emp.get_availability() == {
+    "Monday": [("4:00 PM", "11:00 PM")]
+}
    
 def test_remove_availability():
     emp = Employee("Allen", "SL")
-    emp.add_availability("Monday, 4-11PM")
-    emp.remove_availability("Monday, 4-11PM")
-    assert emp.get_availability() == []
+    emp.add_availability("Monday", ("4:00 PM", "11:00 PM"))
+    emp.remove_availability("Monday", ("4:00 PM", "11:00 PM"))
+    assert emp.get_availability() == {}
 
 def test_remove_availabilty_raise_not_found_error():
     with pytest.raises(ValueError):
         emp = Employee("Allen","SL")
-        emp.remove_availability("Monday, 4-11PM")
+        emp.remove_availability("Monday", ("4:00 PM", "11:00 PM"))
 
 def test_clear_availability():
     emp = Employee("Allen", "SL")
-    emp.add_availability("Monday, 4-11PM")
-    emp.add_availability("Tuesday, 4-11PM")
-    emp.add_availability("Wednesday, 4-11PM")
+    emp.add_availability("Monday", ("4:00 PM", "11:00 PM"))
+    emp.add_availability("Tuesday", ("4:00 PM", "11:00 PM"))
+    emp.add_availability("Thursday", ("4:00 PM", "11:00 PM"))
     emp.clear_availability()
-    assert emp.get_availability() == []
+    assert emp.get_availability() == {}
     
 def test_corrupted_v1_is_rejected():
     with pytest.raises(ValueError):
         Employee("& C:/Users/alnig/AppData/Local/Programs/Python/Python314/python.exe c:/Users/alnig/Documents/shiftflow/shiftflow.py","SL")
 
 def test_get_availability_returns_copy():
-    employee = Employee("Allen", "SL")
-    employee.add_availability("Monday")
+    emp = Employee("Allen", "SL")
+    emp.add_availability("Monday",("4:00 PM", "11:00 PM"))
 
-    availability = employee.get_availability()
+    availability = emp.get_availability()
     availability.clear()
 
-    assert employee.get_availability() == ["Monday"]
+    assert emp.get_availability() == {
+        "Monday": [("4:00 PM", "11:00 PM")]
+    }
+    availability = emp.get_availability()
+    availability["Monday"].append(("9:00 AM", "12:00 PM"))
+    assert emp.get_availability() == {
+        "Monday": [("4:00 PM", "11:00 PM")]
+    }
 
 def test_availability_status_values():
     assert AvailabilityStatus.AVAILABLE.value == "available to work" 
     assert AvailabilityStatus.UNAVAILABLE.value == "unavailable to work" 
     assert AvailabilityStatus.UNKNOWN.value == "availability not entered"
-    
+
+def test_new_employee_has_empty_availability():
+    emp = Employee("Allen", "SL")
+    assert emp.get_availability() == {}    

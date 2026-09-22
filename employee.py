@@ -1,4 +1,5 @@
 from enum import Enum
+from copy import deepcopy
 class AvailabilityStatus(Enum):
         AVAILABLE = "available to work" 
         UNAVAILABLE = "unavailable to work" 
@@ -31,10 +32,8 @@ class Employee:
         # Keep the role private so updates go through set_role(),
         # which applies the same validation rules.
         self.__role = role
-
-        # Each employee starts with an empty availability list.
-        # Availability is managed through the methods below.
-        self.__availability = []
+        # Store each day's availability as a list of time blocks.
+        self.__availability = {}
 
     # --- Getters ---
 
@@ -46,12 +45,11 @@ class Employee:
         # Return the employee's current role.
         return self.__role
 
-    def get_availability(self) -> list[str]:
+    def get_availability(self) -> dict:
         """Return a copy of the employee's availability."""
 
-        # Returning a copy prevents callers from modifying the internal list
-        # without using the Employee class's availability methods.
-        return self.__availability.copy()
+        # Return a deep copy to protect the dictionary and its nested lists.
+        return deepcopy(self.__availability)
 
     # --- Setters ---
 
@@ -69,20 +67,24 @@ class Employee:
 
     # --- Availability Management ---
 
-    def add_availability(self, availability_slot: str) -> None:
-        # Append a new availability entry to this employee's private list.
-        self.__availability.append(availability_slot)
+    def add_availability(self, day, time_block):
+        if day not in self.__availability:
+            self.__availability[day] = []
+        self.__availability[day].append(time_block)
 
-    def remove_availability(self, availability_slot: str) -> None:
+
+    def remove_availability(self, day, availability_slot: tuple) -> None:
         # Check whether the requested entry exists before removing it.
-        if availability_slot in self.__availability:
-            self.__availability.remove(availability_slot)
+        if day in self.__availability and availability_slot in self.__availability[day]:
+            self.__availability[day].remove(availability_slot)
+            if not self.__availability[day]:
+                del self.__availability[day]
         else:
             # Provide a specific error identifying the missing entry.
             raise ValueError(
-                f"{self.__name} does not have '{availability_slot}' in their availability."
+                f"{self.__name} does not have '{day},{availability_slot}' in their availability."
             )
 
     def clear_availability(self) -> None:
-        # Remove all availability entries while keeping the same list object.
+        # Remove all availability entries from the dictionary.
         self.__availability.clear()
