@@ -79,3 +79,20 @@ def test_add_shift_rejects_duplicate():
         shift_a = Shift(emp, "2026-09-17", "9:00 AM", "5:00 PM")
         schedule.add_shift(shift_a)
     assert len(schedule.get_shifts()) == 1
+
+def test_add_shift_rejects_after_checking_availability():
+    emp = Employee("Allen", "SL")
+    emp.add_availability("Monday", ("9:00 AM", "12:00 PM"))
+    schedule = Schedule()
+    shift = Shift(emp, "2026-09-21", "3:00 PM", "5:00 PM")
+    with pytest.raises(ValueError):
+        schedule.add_shift(shift)
+    assert len(schedule.get_shifts()) == 0
+
+def test_add_shift_accepts_available_employee():
+    emp = Employee("Allen", "SL")   
+    emp.add_availability("Monday",("9:00 AM","12:00 PM"))
+    schedule = Schedule()
+    shift = Shift(emp, "2026-09-21", "10:00 AM", "12:00 PM")
+    schedule.add_shift(shift)
+    assert len(schedule.get_shifts()) == 1
