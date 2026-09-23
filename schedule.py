@@ -1,6 +1,7 @@
 from shift import Shift
 from employee import Employee,AvailabilityStatus
 from datetime import datetime,timedelta
+import warnings
 
 class Schedule:
     """Manages a collection of employee shifts."""
@@ -33,6 +34,8 @@ class Schedule:
         #reject the shift if the employee is unavialable
         if results == AvailabilityStatus.UNAVAILABLE:
             raise ValueError("Employee is unavailable for this shift.")
+        if results == AvailabilityStatus.UNKNOWN:
+            warnings.warn("Employee availability has not been entered.")
 
         # Check for conflicts with shifts already in the schedule.
  

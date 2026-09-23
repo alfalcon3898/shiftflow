@@ -2,6 +2,7 @@ import pytest
 from employee import Employee
 from shift import Shift
 from schedule import Schedule
+import warnings
 
 def test_add_shift():
     emp = Employee("Allen", "SL")
@@ -96,3 +97,48 @@ def test_add_shift_accepts_available_employee():
     shift = Shift(emp, "2026-09-21", "10:00 AM", "12:00 PM")
     schedule.add_shift(shift)
     assert len(schedule.get_shifts()) == 1
+
+def test_add_shift_when_Availabilty_Uknown():
+    emp = Employee("Allen","SL")
+    schedule = Schedule()
+    shift = Shift(emp, "2026-09-21", "10:00 AM", "12:00 PM")
+    with pytest.warns(UserWarning):
+        schedule.add_shift(shift)
+    assert len(schedule.get_shifts()) == 1
+
+def test_add_shift_availabilty_set_all_day():
+    emp = Employee("Allen", "SL")   
+    emp.set_all_day_availability("Monday")
+    schedule = Schedule()
+    shift = Shift(emp, "2026-09-21", "10:00 AM", "12:00 PM")
+    schedule.add_shift(shift)
+    assert len(schedule.get_shifts()) == 1
+
+def test_add_over_night_shift_tet_availabilty():
+    emp = Employee("Allen", "SL")   
+    emp.add_availability("Monday",("10:00 PM","7:00 AM"))
+    schedule = Schedule()
+    shift = Shift(emp, "2026-09-21", "11:00 PM", "6:00 AM")
+    schedule.add_shift(shift)
+    assert len(schedule.get_shifts()) == 1
+
+def test_add_over_night_shift_tet_availabilty_2():
+    emp = Employee("Allen", "SL")   
+    emp.add_availability("Monday",("10:00 PM","7:00 AM"))
+    schedule = Schedule()
+    shift = Shift(emp, "2026-09-21", "11:00 PM", "8:00 AM")
+    with pytest.raises(ValueError):
+        schedule.add_shift(shift)
+
+def test_specific_availability_replaces_all_day():
+    emp = Employee("Alle", "SL")
+    emp.set_all_day_availability("Monday")
+    emp.add_availability("Monday", ("9:00 AM", "12:00 PM"))
+    assert emp.get_availability() == {
+        "Monday": [("9:00 AM", "12:00 PM")]
+    }
+def test_all_day_replaces_specific_availability():
+    emp = Employee("Allen", "SL")
+    emp.add_availability("Monday", ("9:00 AM", "12:00 PM"))
+    emp.set_all_day_availability("Monday")
+    assert emp.get_availability()["Monday"] == "ALL_DAY"

@@ -75,6 +75,8 @@ class Employee:
     def add_availability(self, day, time_block):
         if day not in self.__availability:
             self.__availability[day] = []
+        if self.__availability[day] == "ALL_DAY":
+            self.__availability[day] = []
         self.__availability[day].append(time_block)
 
 
