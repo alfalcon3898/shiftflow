@@ -81,3 +81,39 @@ def test_availability_status_values():
 def test_new_employee_has_empty_availability():
     emp = Employee("Allen", "SL")
     assert emp.get_availability() == {}    
+
+def test_check_availability_wiithin_block():
+    emp = Employee("Allen", "SL")
+    emp.add_availability("Monday", ("9:00 AM", "12:00 PM"))
+
+    result = emp.check_availability("Monday", ("9:00 AM", "12:00 PM"))
+
+    assert result == AvailabilityStatus.AVAILABLE
+
+def test_check_unvailability_wiithin_block():
+    emp = Employee("Allen","SL")
+    emp.add_availability("Monday", ("9:00 AM", "12:00 PM"))
+    result = emp.check_availability("Monday", ("11:00 AM", "3:00 PM"))
+
+    assert result == AvailabilityStatus.UNAVAILABLE
+
+def test_check_unknown_wiithin_block():
+    emp = Employee("Allen", "SL")
+    result = emp.check_availability("Monday", ("11:00 AM", "3:00 PM"))
+    assert result == AvailabilityStatus.UNKNOWN
+
+
+def test_check_availability_wiithin_block_multiple_checks():
+    emp = Employee("Allen","SL")
+    emp.add_availability("Monday", ("9:00 AM", "12:00 PM"))
+    emp.add_availability("Monday", ("2:00 PM", "6:00 PM"))
+    result = emp.check_availability("Monday", ("3:00 PM", "5:00 PM"))
+
+    assert result == AvailabilityStatus.AVAILABLE
+
+def test_setting_availability_all_day():
+    emp = Employee("Allen","SL")
+    emp.set_all_day_availability("Monday")
+    result = emp.check_availability("Monday", ("3:00 PM", "5:00 PM"))
+    assert result == AvailabilityStatus.AVAILABLE
+    

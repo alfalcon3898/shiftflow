@@ -1,5 +1,6 @@
 from enum import Enum
 from copy import deepcopy
+from datetime import datetime
 class AvailabilityStatus(Enum):
         AVAILABLE = "available to work" 
         UNAVAILABLE = "unavailable to work" 
@@ -65,6 +66,10 @@ class Employee:
         # Update the role only after it passes validation.
         self.__role = role
 
+    def set_all_day_availability(self, day):
+        self.__availability[day] = "ALL_DAY"
+
+
     # --- Availability Management ---
 
     def add_availability(self, day, time_block):
@@ -88,3 +93,44 @@ class Employee:
     def clear_availability(self) -> None:
         # Remove all availability entries from the dictionary.
         self.__availability.clear()
+
+    def check_availability(self, day, time_block):
+        # No Availability entered for this day
+        if day not in self.__availability:
+            return  AvailabilityStatus.UNKNOWN
+
+        if self.__availability[day] == "ALL_DAY":
+            return AvailabilityStatus.AVAILABLE
+
+        #Extract the proposed shift times.
+        shift_start = time_block[0]
+        shift_end = time_block[1]
+
+        #convert strings into conparable datatime objects.
+        shift_start = datetime.strptime(shift_start,"%I:%M %p" )
+        shift_end = datetime.strptime(shift_end,"%I:%M %p")
+
+        #check every available time block for this day
+        for available_block in self.__availability[day]:
+            available_start = available_block[0]
+            available_end = available_block[1]
+
+            available_start = datetime.strptime(available_start, "%I:%M %p")
+            available_end = datetime.strptime(available_end, "%I:%M %p")
+
+            #The entired proposrd shift must fit inside one block
+            if shift_start >= available_start and shift_end <= available_end:
+                return AvailabilityStatus.AVAILABLE
+
+        # No available block contained the proposed shift.
+        return AvailabilityStatus.UNAVAILABLE   
+
+
+
+        
+
+
+
+
+
+    
