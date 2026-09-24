@@ -116,4 +116,9 @@ def test_setting_availability_all_day():
     emp.set_all_day_availability("Monday")
     result = emp.check_availability("Monday", ("3:00 PM", "5:00 PM"))
     assert result == AvailabilityStatus.AVAILABLE
-    
+
+def test_add_availability_rejects_invalid_time():
+    emp = Employee("Allen", "SL")
+    with pytest.raises(ValueError):
+        emp.add_availability("Monday", ("banana", "12:00 PM"))
+    assert emp.get_availability() == {}

@@ -73,6 +73,11 @@ class Employee:
     # --- Availability Management ---
 
     def add_availability(self, day, time_block):
+        start_time = time_block[0]
+        end_time = time_block[1]
+        datetime.strptime(start_time,"%I:%M %p")
+        datetime.strptime(end_time, "%I:%M %p")
+                
         if day not in self.__availability:
             self.__availability[day] = []
         if self.__availability[day] == "ALL_DAY":
