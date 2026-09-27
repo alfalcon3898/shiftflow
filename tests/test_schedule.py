@@ -142,3 +142,13 @@ def test_all_day_replaces_specific_availability():
     emp.add_availability("Monday", ("9:00 AM", "12:00 PM"))
     emp.set_all_day_availability("Monday")
     assert emp.get_availability()["Monday"] == "ALL_DAY"
+
+def test_required_staffing_by_sales():
+    schedule = Schedule()
+    assert schedule.get_required_staffing(5000) == 5
+
+def test_required_staffing_by_sales_2():
+    schedule = Schedule()
+    assert schedule.get_required_staffing(5001) == 6
+
+       

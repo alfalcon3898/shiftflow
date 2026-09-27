@@ -11,6 +11,17 @@ class Schedule:
         # Shifts are added and removed through the methods below.
         self.__shifts = []
 
+    #---set staffing by sales---
+    def get_required_staffing(self, projected_sales:int)-> int:
+        if projected_sales <= 5000:
+            return 5
+        else:
+            return 6
+        
+
+
+
+
     # --- Add Shift ---
 
     def add_shift(self, shift: Shift) -> None:
@@ -65,3 +76,5 @@ class Schedule:
         # Remove the specified shift from the schedule.
         # Python raises ValueError if the shift is not present.
         self.__shifts.remove(shift)
+
+
