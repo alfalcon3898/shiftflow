@@ -83,5 +83,14 @@ class Schedule:
             missing = 0
 
         return missing
+    def get_employee_hours(self, employee:Employee)-> float:
+        total_hrs = 0
+        for shift in self.__shifts:
+            if shift.get_employee() == employee:
+                total_hrs += shift.calculate_shift_hr()
+        return total_hrs
+
+    
+
 
     

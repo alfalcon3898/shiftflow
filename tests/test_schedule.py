@@ -168,4 +168,15 @@ def test_staffing_shortage_uqual():
     required = 5
     current = 5
     assert schedule.get_staffing_shortage(required, current) == 0
-    
+
+def test_get_employee_hrs():
+    schedule = Schedule()
+    allen = Employee("Allen", "crew")
+    bob = Employee("Bob", "crew")
+    allen_shift_1 = Shift(allen, "2026-09-21", "11:00 PM", "7:00 AM")
+    allen_shift_2 = Shift(allen, "2026-09-22", "11:00 PM", "5:00 AM")
+    bob_shift_1 = Shift(bob,"2026-09-23", "11:00 PM", "5:00 AM")
+    schedule.add_shift(allen_shift_1)
+    schedule.add_shift(allen_shift_2)
+    schedule.add_shift(bob_shift_1)
+    assert schedule.get_employee_hours(allen) == 14
