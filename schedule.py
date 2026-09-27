@@ -77,4 +77,11 @@ class Schedule:
         # Python raises ValueError if the shift is not present.
         self.__shifts.remove(shift)
 
+    def get_staffing_shortage(self, required: int, current: int) ->int:
+        missing = required - current
+        if missing < 0:
+            missing = 0
 
+        return missing
+
+    

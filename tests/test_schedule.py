@@ -151,4 +151,21 @@ def test_required_staffing_by_sales_2():
     schedule = Schedule()
     assert schedule.get_required_staffing(5001) == 6
 
-       
+def test_staffing_shortage():
+    schedule = Schedule()
+    required = 6
+    current = 3
+    assert schedule.get_staffing_shortage(required,current) == 3
+
+def test_staffing_shortage_0():
+    schedule = Schedule()
+    required = 5
+    current = 7
+    assert schedule.get_staffing_shortage(required, current) == 0
+
+def test_staffing_shortage_uqual():
+    schedule = Schedule()
+    required = 5
+    current = 5
+    assert schedule.get_staffing_shortage(required, current) == 0
+    
