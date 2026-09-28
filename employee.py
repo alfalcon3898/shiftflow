@@ -11,7 +11,7 @@ class AvailabilityStatus(Enum):
 class Employee:
     """Represents a single employee with encapsulated name, role, and availability data."""
 
-    def __init__(self, name: str, role: str, target_weekly_hr:int = 40) -> None:
+    def __init__(self, name: str, role: str, target_weekly_hr:int = 40,  hire_date: str | None = None) -> None:
         # Validate the employee's name before storing it.
         # Reject blank names and names exceeding the 100-character limit.
         if name.strip() == "":
@@ -43,6 +43,12 @@ class Employee:
         # Store the employee's preferred weekly-hour target.
         self.__target_weekly_hr = target_weekly_hr
 
+        #Store the employoyee hire date
+        if hire_date is not None:
+            datetime.strptime(hire_date, "%Y-%m-%d")
+        self.__hire_date = hire_date
+
+
     # --- Getters ---
 
     def get_name(self) -> str:
@@ -61,6 +67,9 @@ class Employee:
 
     def get_target_weekly_hr(self) -> int:
         return self.__target_weekly_hr
+
+    def get_hire_date(self) -> str | None:
+        return self.__hire_date
 
     # --- Setters ---
 

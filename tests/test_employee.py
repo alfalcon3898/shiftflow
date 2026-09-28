@@ -138,3 +138,15 @@ def test_target_weekly_hrs_cannot_exceed_40():
 def test_target_weekly_hrs_cannot_be_less_than_0():
     with pytest.raises(ValueError):
         Employee("Allen", "SL", -1)
+
+def test_add_hire_date():
+    emp = Employee("Allen", "crew", 20, "2021-06-15")
+    assert emp.get_hire_date() == "2021-06-15"
+
+def test_invalid_data_hire():
+    with pytest.raises(ValueError):
+        Employee("Allen", "crew", 20, "banana")
+
+def test_none_data_hire():
+    emp = Employee("Allen", "crew", 20,)
+    assert emp.get_hire_date() is None
