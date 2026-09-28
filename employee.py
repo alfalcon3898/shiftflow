@@ -43,10 +43,12 @@ class Employee:
         # Store the employee's preferred weekly-hour target.
         self.__target_weekly_hr = target_weekly_hr
 
-        #Store the employoyee hire date
+        #Store hire date
         if hire_date is not None:
-            datetime.strptime(hire_date, "%Y-%m-%d")
+             datetime.strptime(hire_date, "%Y-%m-%d") 
         self.__hire_date = hire_date
+
+       
 
 
     # --- Getters ---

@@ -3,7 +3,7 @@ from employee import Employee
 from shift import Shift
 from schedule import Schedule
 import warnings
-
+import random
 def test_add_shift():
     emp = Employee("Allen", "SL")
     shift = Shift(emp,"2026-09-17", "9:00 AM", "5:00 PM")
@@ -228,4 +228,75 @@ def test_remaining_hrs_above_preffered_weekly_targer_hrs():
     schedule.add_shift(allen_shift_2)
     schedule.add_shift(allen_shift_3)
     assert schedule.get_remaining_target_hours(allen) == 0
+
+def test_chosing_who_get_hrs():
+    schedule = Schedule()
+    allen = Employee("Allen", "crew", 20, "2021-06-15")
+    bob = Employee("Bob", "crew", 20, "2023-06-15")
+    allen_shift_1 = Shift(allen, "2026-09-21", "11:00 PM", "5:00 AM")
+    allen_shift_2 = Shift(allen, "2026-09-22", "11:00 PM", "5:00 AM")
+    bob_shift_1 = Shift(bob, "2026-09-21", "11:00 PM", "7:00 AM")
+    bob_shift_2 = Shift(bob, "2026-09-22", "11:00 PM", "7:00 AM")
+    schedule.add_shift(allen_shift_1)
+    schedule.add_shift(allen_shift_2)
+    schedule.add_shift(bob_shift_1)
+    schedule.add_shift(bob_shift_2)
+    assert schedule.choose_employee_for_hours(allen, bob) == allen
+
+def test_chosing_who_get_hrs_employee1_has_less():
+    schedule = Schedule()
+    allen = Employee("Allen", "crew", 20, "2021-06-15")
+    bob = Employee("Bob", "crew", 20, "2023-06-15")
+    allen_shift_1 = Shift(allen, "2026-09-21", "11:00 PM", "7:00 AM")
+    allen_shift_2 = Shift(allen, "2026-09-22", "11:00 PM", "7:00 AM")
+    bob_shift_1 = Shift(bob, "2026-09-21", "11:00 PM", "5:00 AM")
+    bob_shift_2 = Shift(bob, "2026-09-22", "11:00 PM", "5:00 AM")
+    schedule.add_shift(allen_shift_1)
+    schedule.add_shift(allen_shift_2)
+    schedule.add_shift(bob_shift_1)
+    schedule.add_shift(bob_shift_2)
+    assert schedule.choose_employee_for_hours(allen, bob) == bob
+
+def test_equal_remaining_hrs_use_seniority():
+    schedule = Schedule()
+    allen = Employee("Allen", "crew", 20, "2021-06-15")
+    bob = Employee("Bob", "crew", 20, "2023-06-15")
+    allen_shift_1 = Shift(allen, "2026-09-21", "11:00 PM", "7:00 AM")
+    allen_shift_2 = Shift(allen, "2026-09-22", "11:00 PM", "7:00 AM")
+    bob_shift_1 = Shift(bob, "2026-09-21", "11:00 PM", "7:00 AM")
+    bob_shift_2 = Shift(bob, "2026-09-22", "11:00 PM", "7:00 AM")
+    schedule.add_shift(allen_shift_1)
+    schedule.add_shift(allen_shift_2)
+    schedule.add_shift(bob_shift_1)
+    schedule.add_shift(bob_shift_2)
+    assert schedule.choose_employee_for_hours(allen, bob) == allen
+
+def test_equal_remaining_hrs_use_seniority_employee1_is_not_seniorty():
+    schedule = Schedule()
+    allen = Employee("Allen", "crew", 20, "2023-06-15")
+    bob = Employee("Bob", "crew", 20, "2021-06-15")
+    allen_shift_1 = Shift(allen, "2026-09-21", "11:00 PM", "7:00 AM")
+    allen_shift_2 = Shift(allen, "2026-09-22", "11:00 PM", "7:00 AM")
+    bob_shift_1 = Shift(bob, "2026-09-21", "11:00 PM", "7:00 AM")
+    bob_shift_2 = Shift(bob, "2026-09-22", "11:00 PM", "7:00 AM")
+    schedule.add_shift(allen_shift_1)
+    schedule.add_shift(allen_shift_2)
+    schedule.add_shift(bob_shift_1)
+    schedule.add_shift(bob_shift_2)
+    assert schedule.choose_employee_for_hours(allen, bob) == bob
+
     
+def test_equal_remaining_hrs_and_seniority_random_pick():
+    schedule = Schedule()
+    allen = Employee("Allen", "crew", 20, "2023-06-15")
+    bob = Employee("Bob", "crew", 20, "2023-06-15")
+    allen_shift_1 = Shift(allen, "2026-09-21", "11:00 PM", "7:00 AM")
+    allen_shift_2 = Shift(allen, "2026-09-22", "11:00 PM", "7:00 AM")
+    bob_shift_1 = Shift(bob, "2026-09-21", "11:00 PM", "7:00 AM")
+    bob_shift_2 = Shift(bob, "2026-09-22", "11:00 PM", "7:00 AM")
+    schedule.add_shift(allen_shift_1)
+    schedule.add_shift(allen_shift_2)
+    schedule.add_shift(bob_shift_1)
+    schedule.add_shift(bob_shift_2)
+    result = schedule.choose_employee_for_hours(allen, bob)
+    assert result in [allen, bob]
