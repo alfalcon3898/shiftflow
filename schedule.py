@@ -90,7 +90,13 @@ class Schedule:
                 total_hrs += shift.calculate_shift_hr()
         return total_hrs
 
-    
+    def can_assign_shift(self, employee:Employee, shift:Shift)-> bool:
+        predicted_hrs_total = self.get_employee_hours(employee) + shift.calculate_shift_hr()
+        if predicted_hrs_total > 40:
+            return False
+        else:
+          return True
+
 
 
     

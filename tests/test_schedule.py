@@ -180,3 +180,31 @@ def test_get_employee_hrs():
     schedule.add_shift(allen_shift_2)
     schedule.add_shift(bob_shift_1)
     assert schedule.get_employee_hours(allen) == 14
+
+def test_cannot_assign_shift_over_40_hrs():
+    schedule = Schedule()
+    allen = Employee("allen", "crew")
+    allen_shift_1 = Shift(allen, "2026-09-21", "11:00 PM", "7:00 AM")
+    allen_shift_2 = Shift(allen, "2026-09-22", "11:00 PM", "7:00 AM")
+    allen_shift_3 = Shift(allen, "2026-09-23", "11:00 PM", "7:00 AM")
+    allen_shift_4 = Shift(allen, "2026-09-24", "11:00 PM", "9:00 AM")
+    schedule.add_shift(allen_shift_1)
+    schedule.add_shift(allen_shift_2)
+    schedule.add_shift(allen_shift_3)
+    schedule.add_shift(allen_shift_4)
+    proposed_shift = Shift(allen, "2026-09-25", "11:00 PM", "7:00 AM")
+    assert schedule.can_assign_shift(allen,proposed_shift ) == False
+
+def test_can_assign_shift_40_hrs():
+    schedule = Schedule()
+    allen = Employee("allen", "crew")
+    allen_shift_1 = Shift(allen, "2026-09-21", "11:00 PM", "7:00 AM")
+    allen_shift_2 = Shift(allen, "2026-09-22", "11:00 PM", "7:00 AM")
+    allen_shift_3 = Shift(allen, "2026-09-23", "11:00 PM", "7:00 AM")
+    allen_shift_4 = Shift(allen, "2026-09-24", "11:00 PM", "7:00 AM")
+    schedule.add_shift(allen_shift_1)
+    schedule.add_shift(allen_shift_2)
+    schedule.add_shift(allen_shift_3)
+    schedule.add_shift(allen_shift_4)
+    proposed_shift = Shift(allen, "2026-09-25", "11:00 PM", "7:00 AM")
+    assert schedule.can_assign_shift(allen,proposed_shift ) == True
