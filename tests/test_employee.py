@@ -122,3 +122,19 @@ def test_add_availability_rejects_invalid_time():
     with pytest.raises(ValueError):
         emp.add_availability("Monday", ("banana", "12:00 PM"))
     assert emp.get_availability() == {}
+
+def test_employee_object_being_created_with_defult_40_hrs():
+    emp = Employee("Allen","SL")
+    assert emp.get_target_weekly_hr() == 40
+
+def test_employee_can_have_custom_target_weekly_hours():
+    emp = Employee("Allen","SL", 20)
+    assert emp.get_target_weekly_hr() == 20
+    
+def test_target_weekly_hrs_cannot_exceed_40():
+    with pytest.raises(ValueError):
+        Employee("Allen", "SL", 41) 
+
+def test_target_weekly_hrs_cannot_be_less_than_0():
+    with pytest.raises(ValueError):
+        Employee("Allen", "SL", -1)

@@ -11,7 +11,7 @@ class AvailabilityStatus(Enum):
 class Employee:
     """Represents a single employee with encapsulated name, role, and availability data."""
 
-    def __init__(self, name: str, role: str) -> None:
+    def __init__(self, name: str, role: str, target_weekly_hr:int = 40) -> None:
         # Validate the employee's name before storing it.
         # Reject blank names and names exceeding the 100-character limit.
         if name.strip() == "":
@@ -36,6 +36,13 @@ class Employee:
         # Store each day's availability as a list of time blocks.
         self.__availability = {}
 
+        # Weekly hours validation
+        if target_weekly_hr < 0 or target_weekly_hr > 40:
+            raise ValueError("Target weekly hours must be between 0 and 40.")   
+
+        # Store the employee's preferred weekly-hour target.
+        self.__target_weekly_hr = target_weekly_hr
+
     # --- Getters ---
 
     def get_name(self) -> str:
@@ -51,6 +58,9 @@ class Employee:
 
         # Return a deep copy to protect the dictionary and its nested lists.
         return deepcopy(self.__availability)
+
+    def get_target_weekly_hr(self) -> int:
+        return self.__target_weekly_hr
 
     # --- Setters ---
 
