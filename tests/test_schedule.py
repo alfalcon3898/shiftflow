@@ -208,3 +208,24 @@ def test_can_assign_shift_40_hrs():
     schedule.add_shift(allen_shift_4)
     proposed_shift = Shift(allen, "2026-09-25", "11:00 PM", "7:00 AM")
     assert schedule.can_assign_shift(allen,proposed_shift ) == True
+
+def test_remaining_hrs_below_preffered_weekly_targer_hrs():
+    schedule = Schedule()
+    allen = Employee("allen", "crew", 20)
+    allen_shift_1 = Shift(allen, "2026-09-21", "11:00 PM", "7:00 AM")
+    allen_shift_2 = Shift(allen, "2026-09-22", "11:00 PM", "3:00 AM")
+    schedule.add_shift(allen_shift_1)
+    schedule.add_shift(allen_shift_2)
+    assert schedule.get_remaining_target_hours(allen) == 8
+
+def test_remaining_hrs_above_preffered_weekly_targer_hrs():
+    schedule = Schedule()
+    allen = Employee("allen", "crew", 20)
+    allen_shift_1 = Shift(allen, "2026-09-21", "11:00 PM", "7:00 AM")
+    allen_shift_2 = Shift(allen, "2026-09-22", "11:00 PM", "7:00 AM")
+    allen_shift_3 = Shift(allen, "2026-09-23", "11:00 PM", "7:00 AM")
+    schedule.add_shift(allen_shift_1)
+    schedule.add_shift(allen_shift_2)
+    schedule.add_shift(allen_shift_3)
+    assert schedule.get_remaining_target_hours(allen) == 0
+    

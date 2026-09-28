@@ -96,7 +96,15 @@ class Schedule:
             return False
         else:
           return True
-
+    def get_remaining_target_hours(self, employee: Employee) -> float:
+        current_hours = self.get_employee_hours(employee)
+        target_hrs = employee.get_target_weekly_hr()
+        remaining_hrs = target_hrs - current_hours
+        if  current_hours > target_hrs:
+            return 0
+        else:
+            return remaining_hrs
+    
 
 
     
