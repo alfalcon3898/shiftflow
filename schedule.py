@@ -84,11 +84,26 @@ class Schedule:
             missing = 0
 
         return missing
-    def get_employee_hours(self, employee:Employee)-> float:
+   
+    def get_employee_hours(self, employee:Employee, week_date:str | None = None)-> float:
         total_hrs = 0
-        for shift in self.__shifts:
-            if shift.get_employee() == employee:
-                total_hrs += shift.calculate_shift_hr()
+        if week_date is None:
+            for shift in self.__shifts:
+                if shift.get_employee() == employee:
+                    total_hrs += shift.calculate_shift_hr()
+                
+        else:
+
+            week_date = datetime.strptime(week_date, "%Y-%m-%d")
+            days = week_date.weekday()
+            week_start = week_date - timedelta(days=days)
+            week_end = week_start + timedelta(days=6)
+
+            for shift in self.__shifts:
+                shift_date = datetime.strptime(shift.get_date(), "%Y-%m-%d")
+
+                if shift.get_employee() == employee and shift_date >= week_start and shift_date <= week_end:
+                    total_hrs += shift.calculate_shift_hr()
         return total_hrs
 
     def can_assign_shift(self, employee:Employee, shift:Shift)-> bool:
@@ -123,5 +138,11 @@ class Schedule:
             elif employee_2_hire_date == employee_1_hire_date:
                 return random.choice([employee_1, employee_2])
         
-
-    
+    def  can_pick_up_shift(self, employee: Employee, shift: Shift) -> bool:
+        predicted_hrs_total = self.get_employee_hours(employee) + shift.calculate_shift_hr()
+        if predicted_hrs_total > 40:
+            return False  
+        else:
+            shift.set_employee(employee)  
+            return True
+            

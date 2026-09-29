@@ -54,6 +54,13 @@ class Shift:
 
     # --- Setters ---
 
+    def set_employee(self, employee: Employee) -> None:
+        if not isinstance(employee, Employee):
+            raise TypeError("Employee must be an Employee object.")
+        else:
+            self.__employee = employee
+
+
     def set_date(self, date: str) -> None:
         # Validate the new date before replacing the existing value.
         datetime.strptime(date, "%Y-%m-%d")

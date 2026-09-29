@@ -106,3 +106,10 @@ def test_shift_crossing_midnight_overlap_conflict():
     shift_A = Shift(emp,"2026-09-16", "11:00 PM", "7:00 AM")
     shift_B = Shift(emp,"2026-09-17", "6:00 AM", "2:00 PM")
     assert shift_A.conflicts_with(shift_B) is True
+
+def test_set_employee():
+    allen = Employee("Allen", "crew")
+    bob = Employee("Bob", "crew")
+    shift_A = Shift(allen,"2026-09-16", "11:00 PM", "7:00 AM")
+    shift_A.set_employee(bob)
+    assert shift_A.get_employee() == bob

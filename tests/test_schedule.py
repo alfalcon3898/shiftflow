@@ -300,3 +300,52 @@ def test_equal_remaining_hrs_and_seniority_random_pick():
     schedule.add_shift(bob_shift_2)
     result = schedule.choose_employee_for_hours(allen, bob)
     assert result in [allen, bob]
+
+def test_emploee_hours_only_count_selected_week():
+    schedule = Schedule()
+    allen = Employee("Allen", "crew")
+    allen_shift_1 = Shift(allen, "2026-09-21", "11:00 PM", "7:00 AM")
+    allen_shift_2 = Shift(allen, "2026-09-22", "11:00 PM", "7:00 AM")
+    allen_shift_3 = Shift(allen, "2026-09-28", "11:00 PM", "7:00 AM")
+    allen_shift_4 = Shift(allen, "2026-09-29", "11:00 PM", "7:00 AM")
+    schedule.add_shift(allen_shift_1)
+    schedule.add_shift(allen_shift_2)
+    schedule.add_shift(allen_shift_3)
+    schedule.add_shift(allen_shift_4)
+    assert schedule.get_employee_hours(allen, "2026-09-28") == 16
+
+def test_cannot_pick_up_shift_over_40_hours():
+    schedule = Schedule()
+    allen = Employee("Allen", "crew")
+    bob = Employee("bob", "crew")
+    allen_shift_1 = Shift(allen, "2026-09-21", "11:00 PM", "7:00 AM")
+    allen_shift_2 = Shift(allen, "2026-09-22", "11:00 PM", "7:00 AM")
+    allen_shift_3 = Shift(allen, "2026-09-24", "11:00 PM", "7:00 AM")
+    allen_shift_4 = Shift(allen, "2026-09-25", "11:00 PM", "11:00 AM")
+    schedule.add_shift(allen_shift_1)
+    schedule.add_shift(allen_shift_2)
+    schedule.add_shift(allen_shift_3)
+    schedule.add_shift(allen_shift_4)
+    bob_shift_1 = Shift(bob, "2026-09-23", "11:00 PM", "7:00 AM")
+    schedule.add_shift(bob_shift_1)
+    assert schedule.can_pick_up_shift(allen, bob_shift_1) == False
+    assert bob_shift_1.get_employee() == bob
+    
+def test_can_pick_up_shift_not_over_40_hours():
+    schedule = Schedule()
+    allen = Employee("Allen", "crew")
+    bob = Employee("bob", "crew")
+    allen_shift_1 = Shift(allen, "2026-09-21", "11:00 PM", "7:00 AM")
+    allen_shift_2 = Shift(allen, "2026-09-22", "11:00 PM", "7:00 AM")
+    allen_shift_3 = Shift(allen, "2026-09-24", "11:00 PM", "7:00 AM")
+    allen_shift_4 = Shift(allen, "2026-09-25", "11:00 PM", "7:00 AM")
+    schedule.add_shift(allen_shift_1)
+    schedule.add_shift(allen_shift_2)
+    schedule.add_shift(allen_shift_3)
+    schedule.add_shift(allen_shift_4)
+    bob_shift_1 = Shift(bob, "2026-09-23", "11:00 PM", "7:00 AM")
+    schedule.add_shift(bob_shift_1)
+    assert schedule.can_pick_up_shift(allen, bob_shift_1) == True
+    assert bob_shift_1.get_employee() == allen
+
+
