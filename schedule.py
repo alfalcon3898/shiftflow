@@ -107,13 +107,13 @@ class Schedule:
         return total_hrs
 
     def can_assign_shift(self, employee:Employee, shift:Shift)-> bool:
-        predicted_hrs_total = self.get_employee_hours(employee) + shift.calculate_shift_hr()
+        predicted_hrs_total = self.get_employee_hours(employee, shift.get_date()) + shift.calculate_shift_hr()
         if predicted_hrs_total > 40:
             return False
         else:
           return True
-    def get_remaining_target_hours(self, employee: Employee) -> float:
-        current_hours = self.get_employee_hours(employee)
+    def get_remaining_target_hours(self, employee: Employee, week_date:str | None = None) -> float:
+        current_hours = self.get_employee_hours(employee, week_date)
         target_hrs = employee.get_target_weekly_hr()
         remaining_hrs = target_hrs - current_hours
         if  current_hours > target_hrs:
@@ -139,7 +139,7 @@ class Schedule:
                 return random.choice([employee_1, employee_2])
         
     def  can_pick_up_shift(self, employee: Employee, shift: Shift) -> bool:
-        predicted_hrs_total = self.get_employee_hours(employee) + shift.calculate_shift_hr()
+        predicted_hrs_total = self.get_employee_hours(employee ,shift.get_date()) + shift.calculate_shift_hr()
         if predicted_hrs_total > 40:
             return False  
         else:
