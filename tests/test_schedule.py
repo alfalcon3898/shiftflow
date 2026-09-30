@@ -382,3 +382,33 @@ def test_reamining_target_hrs_with_week_filtering():
     schedule.add_shift(allen_shift_3)
     schedule.add_shift(allen_shift_4)
     assert schedule.get_remaining_target_hours(allen,"2026-09-29") == 20
+
+def test_choose_who_get_hrs_with_weekly_filter():
+    schedule = Schedule()
+    allen = Employee("Allen", "crew")
+    bob = Employee("Bob", "crew")
+    #week1
+    allen_shift_1 = Shift(allen, "2026-09-21", "11:00 PM", "11:00 AM")
+    allen_shift_2 = Shift(allen, "2026-09-22", "11:00 PM", "11:00 AM")
+    allen_shift_3 = Shift(allen, "2026-09-23", "11:00 PM", "9:00 AM")
+    schedule.add_shift(allen_shift_1)
+    schedule.add_shift(allen_shift_2)
+    schedule.add_shift(allen_shift_3)
+
+    #week2
+    allen_shift_4 = Shift(allen, "2026-09-28", "11:00 PM", "7:00 AM")
+    schedule.add_shift(allen_shift_4)
+    bob_shift_1 = Shift(bob, "2026-09-28", "11:00 PM", "7:00 AM")
+    bob_shift_2 = Shift(bob, "2026-09-29", "11:00 PM", "11:00 AM")
+    bob_shift_3 = Shift(bob, "2026-09-30", "11:00 PM", "5:00 AM")
+    schedule.add_shift(bob_shift_1)
+    schedule.add_shift(bob_shift_2)
+    schedule.add_shift(bob_shift_3)
+
+    assert schedule.choose_employee_for_hours(allen, bob, "2026-09-28") == allen
+
+   
+
+
+
+

@@ -120,9 +120,10 @@ class Schedule:
             return 0
         else:
             return remaining_hrs
-    def choose_employee_for_hours(self,employee_1: Employee,employee_2: Employee) -> Employee:
-        employee_1_remaining_hrs = self.get_remaining_target_hours(employee_1)
-        employee_2_remaining_hrs = self.get_remaining_target_hours(employee_2)
+    
+    def choose_employee_for_hours(self,employee_1: Employee,employee_2: Employee, week_date:str|None = None) -> Employee:
+        employee_1_remaining_hrs = self.get_remaining_target_hours(employee_1, week_date)
+        employee_2_remaining_hrs = self.get_remaining_target_hours(employee_2, week_date)
         employee_1_hire_date = employee_1.get_hire_date()
         employee_2_hire_date = employee_2.get_hire_date()
 
