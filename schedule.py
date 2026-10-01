@@ -40,10 +40,10 @@ class Schedule:
         employee = shift.get_employee()
         time_block = (shift.get_start_time(), shift.get_end_time())
 
-        #Check wether the employee is available for this shift
+        #Check if the employee is available for this shift
         results = employee.check_availability(day,time_block)
 
-        #reject the shift if the employee is unavialable
+        #reject the shift if the employee is unavailable
         if results == AvailabilityStatus.UNAVAILABLE:
             raise ValueError("Employee is unavailable for this shift.")
         if results == AvailabilityStatus.UNKNOWN:
