@@ -8,3 +8,12 @@ def initialize_database(database_path):
     role TEXT NOT NULL )                  
     """)
     connection.close()
+
+def save_employee(database_path,employee):
+    connection = sqlite3.connect(database_path)
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO employees(name, role) VALUES(?,?)",
+                   (employee.get_name(), employee.get_role())
+    )
+    connection.commit()
+    connection.close()
