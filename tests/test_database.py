@@ -1,4 +1,4 @@
-from database import initialize_database,save_employee
+from database import initialize_database,save_employee, load_employee
 from employee import Employee
 import sqlite3
 def test_initialize_database_employee_table(tmp_path):
@@ -23,3 +23,14 @@ def test_save_employee(tmp_path):
     result = cursor.fetchone()
     assert result == ("Allen","SL")
     connection.close()
+
+def test_load_employee(tmp_path):
+    database_path = tmp_path/"test_shiftflow.db"
+    initialize_database(database_path)
+    
+    employee = Employee("Allen","SL")
+    save_employee(database_path, employee)
+
+    loaded_employee = load_employee(database_path,1)
+    assert loaded_employee.get_name() == "Allen"
+    assert loaded_employee.get_role() == "SL"
