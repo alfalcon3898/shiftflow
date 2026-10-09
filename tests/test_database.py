@@ -1,7 +1,9 @@
-from database import initialize_database,save_employee, load_employee, save_availability, load_availability
+from database import initialize_database,save_employee, load_employee, save_availability, load_availability, save_shift, load_shifts,load_shift
 from employee import Employee
+from shift import Shift
 import sqlite3
 import pytest
+from database import load_shift
 def test_initialize_database_employee_table(tmp_path):
     database_path = tmp_path/ "test_shiftflow.db"
     initialize_database(database_path)
@@ -164,3 +166,71 @@ def test_load_availability_multiple_time_and_all_day(tmp_path):
     "Tuesday": "ALL_DAY"
     
 }
+
+def test_initialize_database_shifts_table(tmp_path):
+    database_path = tmp_path / "test_shiftflow.db"
+    initialize_database(database_path)
+    
+    connection = sqlite3.connect(database_path)
+    cursor = connection.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type = 'table' AND name ='shifts';")
+    results = cursor.fetchone()
+    assert results == ('shifts',)
+    connection.close()
+
+
+def test_save_shift(tmp_path):
+    database_path = tmp_path / "test_shiftflow.db"
+    initialize_database(database_path)
+    connection = sqlite3.connect(database_path)
+    cursor = connection.cursor()
+
+
+    emp = Employee("Allen", "SL")
+    shift = Shift(emp,"2026-09-17", "9:00 AM", "5:00 PM")
+    employee_id = save_employee(database_path, emp)
+    assert isinstance(employee_id, int)
+    save_shift(database_path, employee_id, shift)
+    
+    cursor.execute(
+        "SELECT employee_id, date, start_time, end_time FROM shifts WHERE employee_id = ?  ORDER BY id",
+        (employee_id,)
+    )
+    result = cursor.fetchone()
+    assert result == (employee_id, "2026-09-17", "9:00 AM", "5:00 PM")
+    connection.close()
+    
+
+
+def test_load_shift(tmp_path):
+    database_path = tmp_path / "test_shiftflow.db"
+    initialize_database(database_path)
+
+    emp = Employee("Allen", "SL")
+    employee_id = save_employee(database_path, emp)
+
+    shift = Shift(emp, "2026-09-17", "9:00 AM", "5:00 PM")
+    save_shift(database_path, employee_id, shift)
+    loaded_shift = load_shift(database_path, employee_id)
+    assert isinstance(loaded_shift, Shift)
+    assert loaded_shift.get_date() == "2026-09-17"
+    assert loaded_shift.get_start_time() == "9:00 AM"
+    assert loaded_shift.get_end_time() =="5:00 PM"
+    assert loaded_shift.get_employee().get_name() == "Allen"
+
+def test_load_multiple_shifts(tmp_path):
+    database_path = tmp_path / "test_shiftflow.db"
+    initialize_database(database_path)
+
+    emp = Employee("Allen", "SL")
+    employee_id = save_employee(database_path, emp)
+
+    shift1 = Shift(emp, "2026-09-17", "9:00 AM", "5:00 PM")
+    shift2 = Shift(emp, "2026-09-18", "10:00 AM", "6:00 PM")
+    save_shift(database_path, employee_id, shift1)
+    save_shift(database_path, employee_id, shift2)
+    loaded_shifts = load_shifts(database_path, employee_id)
+    assert isinstance(loaded_shifts, list)
+    assert len(loaded_shifts) == 2
+    assert loaded_shifts[0].get_date() == "2026-09-17"
+    assert loaded_shifts[1].get_date() == "2026-09-18"

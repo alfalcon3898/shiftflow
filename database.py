@@ -1,5 +1,6 @@
 import sqlite3
 from employee import Employee
+from shift import Shift
 def initialize_database(database_path):
     connection = sqlite3.connect(database_path)
     connection.execute("PRAGMA foreign_keys = ON")
@@ -20,6 +21,17 @@ def initialize_database(database_path):
         start_time TEXT,
         end_time TEXT,
         all_day INTEGER NOT NULL,
+        FOREIGN KEY (employee_id)
+        REFERENCES employees(id)
+        ON DELETE CASCADE )                  
+        """)
+   # CREATE shifts table
+    cursor.execute("""CREATE TABLE IF NOT EXISTS shifts(
+        id INTEGER PRIMARY KEY,
+        employee_id INTEGER NOT NULL,
+        date TEXT NOT NULL,
+        start_time TEXT NOT NULL,
+        end_time TEXT NOT NULL,
         FOREIGN KEY (employee_id)
         REFERENCES employees(id)
         ON DELETE CASCADE )                  
@@ -84,3 +96,43 @@ def load_availability(database_path, employee_id, employee):
         else:
             employee.add_availability(day, (start_time, end_time))
 
+def save_shift(database_path, employee_id, shift):
+    connection = sqlite3.connect(database_path)
+    connection.execute("PRAGMA foreign_keys = ON")
+    cursor = connection.cursor()
+
+    cursor.execute("INSERT INTO shifts(employee_id, date, start_time, end_time) VALUES(?,?,?,?)",
+                           (employee_id, shift.get_date(),shift.get_start_time(),shift.get_end_time())
+     )
+    connection.commit()
+    connection.close()
+
+
+def load_shift(database_path, employee_id):
+    connection = sqlite3.connect(database_path)
+    cursor = connection.cursor()
+    cursor.execute("SELECT date, start_time, end_time FROM shifts WHERE employee_id = ?",
+                (employee_id,)
+        )
+    result = cursor.fetchone()
+    connection.close()
+    return Shift(load_employee(database_path, employee_id),result[0], result[1], result[2])
+
+def load_shifts(database_path, employee_id):
+    loaded_shifts = []
+    connection = sqlite3.connect(database_path)
+    cursor = connection.cursor()
+
+
+    cursor.execute(
+        "SELECT date, start_time, end_time FROM shifts WHERE employee_id = ? ORDER BY id",
+        (employee_id,)
+    )
+
+    results = cursor.fetchall()
+    employee = load_employee(database_path, employee_id)
+    for result in results:
+        shift = Shift(employee, result[0], result[1], result[2])
+        loaded_shifts.append(shift)
+    connection.close()
+    return loaded_shifts
