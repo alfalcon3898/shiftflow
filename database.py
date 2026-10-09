@@ -115,12 +115,15 @@ def save_shift(database_path, employee_id, shift):
 def load_shift(database_path, employee_id):
     connection = sqlite3.connect(database_path)
     cursor = connection.cursor()
-    cursor.execute("SELECT date, start_time, end_time FROM shifts WHERE employee_id = ?",
+    cursor.execute("SELECT date, start_time, end_time FROM shifts WHERE employee_id = ?  ORDER BY id",
                 (employee_id,)
         )
     result = cursor.fetchone()
     connection.close()
+    if result is None:
+        return None
     return Shift(load_employee(database_path, employee_id),result[0], result[1], result[2])
+
 
 def load_shifts(database_path, employee_id):
     loaded_shifts = []
@@ -134,9 +137,11 @@ def load_shifts(database_path, employee_id):
     )
 
     results = cursor.fetchall()
+    connection.close()
     employee = load_employee(database_path, employee_id)
+
     for result in results:
         shift = Shift(employee, result[0], result[1], result[2])
         loaded_shifts.append(shift)
-    connection.close()
+
     return loaded_shifts

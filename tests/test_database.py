@@ -256,3 +256,46 @@ def test_save_load_employee_extra_fields(tmp_path):
 
     assert loaded_employee.get_target_weekly_hr() == 32
     assert loaded_employee.get_hire_date() == "2024-01-15"
+
+
+def test_shift_reject_unknown_employee(tmp_path):
+    database_path = tmp_path / "test_shiftflow.db"
+    initialize_database(database_path)
+
+    emp = Employee("Allen", "SL")
+    shift = Shift(emp, "2026-09-17", "9:00 AM", "5:00 PM")
+
+    with pytest.raises(sqlite3.IntegrityError):
+        save_shift(database_path, 999, shift)
+
+def test_employee_delete_cascade(tmp_path):
+    database_path = tmp_path / "test_shiftflow.db"
+    initialize_database(database_path)
+
+    connection = sqlite3.connect(database_path)
+    connection.execute("PRAGMA foreign_keys = ON")
+    cursor = connection.cursor()
+
+    emp = Employee("Allen", "SL")
+    employee_id = save_employee(database_path, emp)
+
+    emp.set_all_day_availability("Monday")
+    save_availability(database_path, employee_id, emp)
+
+    shift = Shift(emp, "2026-09-17", "9:00 AM", "5:00 PM")
+    save_shift(database_path, employee_id, shift)
+    cursor.execute(
+    "DELETE FROM employees WHERE id = ?",
+    (employee_id,)
+)
+    connection.commit()
+    cursor.execute("SELECT COUNT(*) FROM employees")
+    assert cursor.fetchone()[0] == 0
+    
+    cursor.execute("SELECT COUNT(*) FROM availability")
+    assert cursor.fetchone()[0] == 0
+    
+    cursor.execute("SELECT COUNT(*) FROM shifts")
+    assert cursor.fetchone()[0] == 0
+
+    connection.close()
