@@ -234,3 +234,25 @@ def test_load_multiple_shifts(tmp_path):
     assert len(loaded_shifts) == 2
     assert loaded_shifts[0].get_date() == "2026-09-17"
     assert loaded_shifts[1].get_date() == "2026-09-18"
+
+
+def test_load_nonexistent_employee(tmp_path):
+    database_path = tmp_path / "test_shiftflow.db"
+    initialize_database(database_path)
+
+    result = load_employee(database_path, 999)
+
+    assert result is None
+
+
+def test_save_load_employee_extra_fields(tmp_path):
+    database_path = tmp_path / "test_shiftflow.db"
+    initialize_database(database_path)
+
+    employee = Employee("Allen", "SL", 32, "2024-01-15")
+    employee_id = save_employee(database_path, employee)
+
+    loaded_employee = load_employee(database_path, employee_id)
+
+    assert loaded_employee.get_target_weekly_hr() == 32
+    assert loaded_employee.get_hire_date() == "2024-01-15"

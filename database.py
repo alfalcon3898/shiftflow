@@ -10,7 +10,9 @@ def initialize_database(database_path):
     cursor.execute("""CREATE TABLE IF NOT EXISTS employees(
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
-    role TEXT NOT NULL )                  
+    role TEXT NOT NULL,
+    target_weekly_hr INTEGER NOT NULL DEFAULT 40,
+    hire_date TEXT)                  
     """)
     
     # CREATE availability table
@@ -41,8 +43,8 @@ def initialize_database(database_path):
 def save_employee(database_path,employee):
     connection = sqlite3.connect(database_path)
     cursor = connection.cursor()
-    cursor.execute("INSERT INTO employees(name, role) VALUES(?,?)",
-                   (employee.get_name(), employee.get_role())
+    cursor.execute("INSERT INTO employees(name, role, target_weekly_hr, hire_date) VALUES(?,?,?,?)",
+                   (employee.get_name(), employee.get_role(),employee.get_target_weekly_hr(),employee.get_hire_date())
     )
     employee_id = cursor.lastrowid
     connection.commit()
@@ -53,12 +55,14 @@ def load_employee(database_path, employee_id):
     connection = sqlite3.connect(database_path)
     cursor = connection.cursor()
     cursor.execute(
-        "SELECT name, role FROM employees WHERE id = ?",
+        "SELECT name, role,target_weekly_hr, hire_date FROM employees WHERE id = ?",
         (employee_id,)
     )
     result = cursor.fetchone()
     connection.close()
-    return Employee(result[0], result[1])
+    if result is None:
+        return None
+    return Employee(result[0], result[1],result[2], result[3])
 
 def save_availability(database_path, employee_id, employee):
     connection = sqlite3.connect(database_path)
