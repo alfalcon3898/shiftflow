@@ -1,4 +1,4 @@
-from database import initialize_database,save_employee, load_employee, save_availability
+from database import initialize_database,save_employee, load_employee, save_availability, load_availability
 from employee import Employee
 import sqlite3
 import pytest
@@ -129,3 +129,38 @@ def test_save_multiple_availability_blocks(tmp_path):
      (employee_id, "Monday", "4:00 PM", "11:00 PM",0)
     ]
     connection.close()
+
+def test_load_availability(tmp_path):
+    database_path = tmp_path/"test_shiftflow.db"
+    initialize_database(database_path)
+    emp = Employee("Allen", "SL")
+    emp.add_availability("Monday", ("4:00 PM", "11:00 PM"))
+    employee_id  = save_employee(database_path, emp)
+    assert isinstance(employee_id, int)
+    save_availability(database_path, employee_id, emp)
+    loaded_employee = load_employee(database_path, employee_id)
+    load_availability(database_path, employee_id, loaded_employee)
+    assert loaded_employee.get_availability() == {
+    "Monday": [("4:00 PM", "11:00 PM")]
+}
+
+def test_load_availability_multiple_time_and_all_day(tmp_path):
+    database_path = tmp_path/"test_shiftflow.db"
+    initialize_database(database_path)
+    emp = Employee("Allen", "SL")
+    emp.add_availability("Monday", ("9:00 AM", "12:00 PM"))
+    emp.add_availability("Monday", ("4:00 PM", "11:00 PM"))
+    emp.set_all_day_availability("Tuesday")
+    employee_id  = save_employee(database_path, emp)
+    assert isinstance(employee_id, int)
+    save_availability(database_path, employee_id, emp)
+    loaded_employee = load_employee(database_path, employee_id)
+    load_availability(database_path, employee_id, loaded_employee)
+    assert loaded_employee.get_availability() == {
+    "Monday": [
+        ("9:00 AM", "12:00 PM"),
+        ("4:00 PM", "11:00 PM")
+               ],
+    "Tuesday": "ALL_DAY"
+    
+}

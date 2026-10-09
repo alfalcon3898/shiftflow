@@ -70,3 +70,17 @@ def save_availability(database_path, employee_id, employee):
     connection.commit()
     connection.close()
 
+def load_availability(database_path, employee_id, employee):
+    connection = sqlite3.connect(database_path)
+    cursor = connection.cursor()
+    cursor.execute("SELECT day, start_time, end_time, all_day FROM availability WHERE employee_id = ?",
+            (employee_id,)
+    )
+    results= cursor.fetchall()
+    connection.close()
+    for day,start_time, end_time, all_day in results:
+        if all_day == 1:
+            employee.set_all_day_availability(day)
+        else:
+            employee.add_availability(day, (start_time, end_time))
+
