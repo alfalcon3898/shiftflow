@@ -1,4 +1,5 @@
 import json
+from employee import Employee
 employees = []
 
 def load_employees():
@@ -18,23 +19,22 @@ def save_employees():
 
 # Add a new employee to the employees list
 def add_employee():
+    name = input("Enter employee name: ")
+    role = input("Enter employee role: ")
 
-    name = input("Enter employee name: ")  # Get employee name
-    role = input("Enter employee role: ")  # Get employee role
     for existing_employee in employees:
-        if existing_employee["name"].lower() == name.lower():
+        if existing_employee.get_name().lower() == name.lower():
             print("Employee already added")
             return
-    new_employee ={
-        "name": name,
-        "role": role,
-        "availability":[]
-    }    
 
-    employees.append(new_employee)  # Add employee to list
-    save_employees()
+    try:
+        new_employee = Employee(name, role)
+    except ValueError as error:
+        print(f"Error: {error}")
+        return
+
+    employees.append(new_employee)
     print("Employee added")
-
 
 # Search for an employee by name
 def search_employee():
@@ -215,7 +215,8 @@ def number_role_types():
 
 # Main menu loop
 def main():
-    load_employees()
+    global employees
+    employees = []
     while True:
 
         print("\n--- ShiftFlow V1 ---")
