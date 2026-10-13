@@ -214,62 +214,65 @@ def number_role_types():
 
 
 # Main menu loop
-load_employees()
-while True:
+def main():
+    load_employees()
+    while True:
 
-    print("\n--- ShiftFlow V1 ---")
-    print("1. Add Employee")
-    print("2. Search Employee")
-    print("3. View Employees")
-    print("4  view employee")
-    print("5. Update Employee Availability")
-    print("6. Delete Employee")
-    print("7. Update Employee Role")
-    print("8. Remove Employee Availability")
-    print("9. print Number of employees")
-    print("10. Clear Availability")
-    print("11. View amount of crew/sl/kl")
-    print("12. Exit")
+        print("\n--- ShiftFlow V1 ---")
+        print("1. Add Employee")
+        print("2. Search Employee")
+        print("3. View Employees")
+        print("4  view employee")
+        print("5. Update Employee Availability")
+        print("6. Delete Employee")
+        print("7. Update Employee Role")
+        print("8. Remove Employee Availability")
+        print("9. print Number of employees")
+        print("10. Clear Availability")
+        print("11. View amount of crew/sl/kl")
+        print("12. Exit")
 
    
-    try:
-        choice = int(input("Enter your choice: "))  # Convert input to number
-    except ValueError:
-        print("Please enter a number.")  # Runs if user enters text
-        continue  # Restart menu loop
+        try:
+            choice = int(input("Enter your choice: "))  # Convert input to number
+        except ValueError:
+            print("Please enter a number.")  # Runs if user enters text
+            continue  # Restart menu loop
 
-    if choice == 1:
-        add_employee()  # Run add employee
+        if choice == 1:
+            add_employee()  # Run add employee
 
-    elif choice == 2:
-        search_employee()  # Run employee search
+        elif choice == 2:
+            search_employee()  # Run employee search
 
-    elif choice == 3:
-        view_employees()  # Show all employees
-    
-    elif choice == 4:
-        view_employee()
+        elif choice == 3:
+            view_employees()  # Show all employees
         
-    elif choice == 5:
-        update_availability()  # Update availability
-    
-    elif choice == 6:
-        delete_employee() #delete employee
-    
-    elif choice == 7:
-        update_role() #Upadate role
-    
-    elif choice == 8:
-        remove_availability() #remove availability
-    elif choice == 9:
-        employee_count() # count employee
-    elif choice == 10:
-        clear_availability() #clear availability
-    elif choice == 11:
-        number_role_types()
-    elif choice == 12:
-        print("Goodbye")
-        break
+        elif choice == 4:
+            view_employee()
+            
+        elif choice == 5:
+            update_availability()  # Update availability
+        
+        elif choice == 6:
+            delete_employee() #delete employee
+        
+        elif choice == 7:
+            update_role() #Upadate role
+        
+        elif choice == 8:
+            remove_availability() #remove availability
+        elif choice == 9:
+            employee_count() # count employee
+        elif choice == 10:
+            clear_availability() #clear availability
+        elif choice == 11:
+            number_role_types()
+        elif choice == 12:
+            print("Goodbye")
+            break
 
-    else:
-        print("Invalid choice")  # Invalid menu option
+        else:
+            print("Invalid choice")  # Invalid menu option
+if __name__ == "__main__":
+    main()
