@@ -162,3 +162,49 @@ def load_all_employees(database_path):
         employees.append((employee_id, employee))
 
     return employees
+
+def update_employee_role(database_path, employee_id, new_role):
+    with sqlite3.connect(database_path) as connection:
+        connection.execute(
+            "UPDATE employees SET role = ? WHERE id = ?",
+            (new_role, employee_id)
+        )
+
+
+def delete_employee_record(database_path, employee_id):
+    with sqlite3.connect(database_path) as connection:
+        connection.execute("PRAGMA foreign_keys = ON")
+        connection.execute(
+            "DELETE FROM employees WHERE id = ?",
+            (employee_id,)
+        )
+
+
+def replace_employee_availability(database_path, employee_id, employee):
+    with sqlite3.connect(database_path) as connection:
+        connection.execute("PRAGMA foreign_keys = ON")
+        connection.execute(
+            "DELETE FROM availability WHERE employee_id = ?",
+            (employee_id,)
+        )
+
+        for day, blocks in employee.get_availability().items():
+            if blocks == "ALL_DAY":
+                connection.execute(
+                    """
+                    INSERT INTO availability
+                    (employee_id, day, start_time, end_time, all_day)
+                    VALUES (?, ?, ?, ?, ?)
+                    """,
+                    (employee_id, day, None, None, 1)
+                )
+            else:
+                for start_time, end_time in blocks:
+                    connection.execute(
+                        """
+                        INSERT INTO availability
+                        (employee_id, day, start_time, end_time, all_day)
+                        VALUES (?, ?, ?, ?, ?)
+                        """,
+                        (employee_id, day, start_time, end_time, 0)
+                    )

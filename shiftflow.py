@@ -1,10 +1,42 @@
 import json
 from employee import Employee
-from database import initialize_database, save_employee, load_all_employees
+from database import (
+    initialize_database,
+    save_employee,
+    load_all_employees,
+    update_employee_role,
+    delete_employee_record,
+    replace_employee_availability,
+)
 
 employees = []
 DATABASE_PATH = "shiftflow.db"
 employee_ids = {}
+
+def find_employee(name):
+    for employee in employees:
+        if employee.get_name().lower() == name.strip().lower():
+            return employee
+    return None
+
+
+def display_employee(employee):
+    print(f"Name: {employee.get_name()}")
+    print(f"Role: {employee.get_role()}")
+
+    availability = employee.get_availability()
+
+    if not availability:
+        print("Availability: Not entered")
+        return
+
+    print("Availability:")
+    for day, blocks in availability.items():
+        if blocks == "ALL_DAY":
+            print(f"  {day}: All day")
+        else:
+            for start_time, end_time in blocks:
+                print(f"  {day}: {start_time} - {end_time}")
 
 def load_employees():
     global employees
@@ -46,174 +78,198 @@ def add_employee():
 
 # Search for an employee by name
 def search_employee():
+    name = input("Enter employee name: ")
+    employee = find_employee(name)
 
-    found = False  # Tracks whether employee was found
-
-    search_name = input("Enter employee name: ")  # Employee to search for
-
-    for employee in employees:  # Loop through employee list
-
-        if employee["name"].lower() == search_name.lower():  # Compare names
-
-            found = True  # Employee found
-
-            print(f"Name: {employee['name']}")  # Display name
-            print(f"Role: {employee['role']}")  # Display role
-            availability_text = ", ".join(employee["availability"])
-            print(f"Availability: {availability_text}")
-
-    if not found:  # Runs if employee wasn't found
+    if employee is None:
         print("Employee not found")
+        return
 
+    display_employee(employee)
 
 # Display all employees and their roles
 def view_employees():
-     #creat a new sorted copy of the employe list
-     #sort by employee name (A-Z)
-     #.lower() make sorting ignore capital
-     
-     sorted_employees = sorted(
-         employees, 
-         key=lambda employee: employee["name"].lower()
-     )
-     
-     for employee in sorted_employees:  # Loop through employee list
-         print(f"{employee['name']} - {employee['role']}")  # Display name and role
-         print("Avalilability:")                         
-         for schedule in employee["availability"]: #go into the availability list
-             print(schedule)#print each day 
-         print("----------------")
+    if not employees:
+        print("No employees found")
+        return
+
+    for employee in sorted(employees, key=lambda e: e.get_name().lower()):
+        display_employee(employee)
+        print("----------------")
          
 #Show only one employee
 def view_employee():
-    found = False
-    search_name = input("Enter employee name: ")
-    for employee in employees:
-            if employee["name"].lower() == search_name.lower():
-                found = True
-
-                print(f"Name: {employee['name']}")  # Display name
-                print(f"Role: {employee['role']}")  # Display role
-                availability_text = ", ".join(employee["availability"])
-                print(f"Availability: {availability_text}")
-                break
-    if not found:
-        print("Employee not found")
+    search_employee()
         
 
 # Update an employee's availability
+# Update an employee's availability
 def update_availability():
+    name = input("Enter employee name: ")
+    employee = find_employee(name)
 
-    found = False  # Tracks whether employee was found
-    search_name = input("Enter employee name: ")  # Employee to update
-
-    for employee in employees:
-        if employee["name"].lower() == search_name.lower():  # Compare names
-            day = input("Enter employee day availability: ")  # Day to add
-            time = input("Enter time: ")  # Time employee can work
-            availability_entry = f"{day} {time}"  # Combines day and time
-            found = True
-            if availability_entry in employee["availability"]: # check for duplicates
-                 print("Availability already exists")
-            else:
-                employee["availability"].append(availability_entry)  # Add day to availability
-                save_employees()
-            
-                print(f"{availability_entry} added to {employee['name']}.") # Success message
-
-    if not found:
+    if employee is None:
         print("Employee not found")
+        return
 
+    # Ask which day the employee is available.
+    day = input("Enter day: ").strip().title()
 
+    if not day:
+        print("Day cannot be empty")
+        return
+
+    # Check whether the employee is available all day.
+    choice = input("Available all day? (y/n): ").strip().lower()
+
+    if choice == "y":
+
+        # Check if all-day availability already exists.
+        if employee.get_availability().get(day) == "ALL_DAY":
+            print("Availability already exists")
+            return
+
+        employee.set_all_day_availability(day)
+
+    elif choice == "n":
+
+        # Ask for the start and end times.
+        start_time = input("Start time (e.g. 09:00 AM): ").strip()
+        end_time = input("End time (e.g. 05:00 PM): ").strip()
+
+        # Check for duplicate availability entries.
+        existing = employee.get_availability().get(day, [])
+
+        if existing != "ALL_DAY" and (start_time, end_time) in existing:
+            print("Availability already exists")
+            return
+
+        try:
+            employee.add_availability(day, (start_time, end_time))
+        except (ValueError, IndexError) as error:
+            print(f"Invalid availability: {error}")
+            return
+
+    else:
+        print("Please enter y or n")
+        return
+
+    # Save the updated availability to SQLite.
+    replace_employee_availability(
+        DATABASE_PATH,
+        employee_ids[employee],
+        employee
+    )
+
+    print(f"Availability updated for {employee.get_name()}")
 
 #Delete employee
 def delete_employee():
-    found = False #Tracks weather employee was found first false
-    search_name = input("Enter employee name: ") # first need to search the name you want to delete
+    name = input("Enter employee name: ")
+    employee = find_employee(name)
 
-    for employee in employees: 
-        if employee["name"].lower() == search_name.lower():
-            found = True
-            employees.remove(employee) #remove employee 
-            save_employees()
-            print(f"{employee['name']} was deleted.") #sucess message
-            break
-        
-    if not found:
-        print("Employee not found ")
+    if employee is None:
+        print("Employee not found")
+        return
+
+    delete_employee_record(DATABASE_PATH, employee_ids[employee])
+
+    employees.remove(employee)
+    del employee_ids[employee]
+
+    print(f"{employee.get_name()} was deleted.")
 
 
 # Update employee update role
 def update_role():
-    found = False
-    search_name = input("Enter employee name: ")
-    for employee in employees:
-        if employee["name"].lower() == search_name.lower():
-            found = True
-            new_role = input("Enter New employee role: ")
-            employee["role"] = new_role
-            save_employees()
-            print(f"{employee['name']} role updated to {new_role}")
-            break
-    if not found:
-        print("Employee not found ")
+    name = input("Enter employee name: ")
+    employee = find_employee(name)
+
+    if employee is None:
+        print("Employee not found")
+        return
+
+    new_role = input("Enter new employee role: ")
+
+    try:
+        employee.set_role(new_role)
+    except ValueError as error:
+        print(f"Invalid role: {error}")
+        return
+
+    update_employee_role(
+        DATABASE_PATH, employee_ids[employee], employee.get_role()
+    )
+    print(f"{employee.get_name()} role updated to {employee.get_role()}")
 
 #remove availabailty 
 def remove_availability():
-    found = False
-    search_name = input("Enter employee name: ")
+    name = input("Enter employee name: ")
+    employee = find_employee(name)
 
-    for employee in employees:
-        if employee["name"].lower() == search_name.lower():
-            found = True
-            available_to_remove = input("What availability do you want to remove? ")
+    if employee is None:
+        print("Employee not found")
+        return
 
-            if available_to_remove in employee["availability"]:
-                employee["availability"].remove(available_to_remove)
-                save_employees()
-                print(f"{available_to_remove} removed from {employee['name']}")
-                break
-            else:
-                print("They dont work that day")
+    day = input("Enter day: ").strip().title()
+    availability = employee.get_availability()
 
-    if not found:
-        print("Employee not found")         
+    if day not in availability:
+        print("No availability for that day")
+        return
+
+    if availability[day] == "ALL_DAY":
+        print("To remove all-day availability, use Clear Availability.")
+        return
+
+    start_time = input("Start time to remove: ").strip()
+    end_time = input("End time to remove: ").strip()
+
+    try:
+        employee.remove_availability(day, (start_time, end_time))
+    except ValueError as error:
+        print(f"Error: {error}")
+        return
+
+    replace_employee_availability(
+        DATABASE_PATH, employee_ids[employee], employee
+    )
+    print(f"Availability removed from {employee.get_name()}")
+
 
 def employee_count():
     print(f"Total Employees: {len(employees)}")
 
+
 def clear_availability():
-    found = False
-    search_name = input("Enter Employee name: ")
-    for employee in employees:
-        if employee["name"].lower() == search_name.lower():
-            found = True
-            employee["availability"].clear()
-            save_employees()
-            print(f"{employee['name']}'s availability was cleared.")
-            break
-    if not found:
+    name = input("Enter employee name: ")
+    employee = find_employee(name)
+
+    if employee is None:
         print("Employee not found")
+        return
+
+    employee.clear_availability()
+
+    replace_employee_availability(
+        DATABASE_PATH, employee_ids[employee], employee
+    )
+    print(f"{employee.get_name()}'s availability was cleared.")
 
 #Number of employee with certain role
-
 def number_role_types():
-    crew_count = 0
-    KL_count = 0
-    SL_count = 0
-    total_employees = len(employees)
+    counts = {"crew": 0, "kl": 0, "sl": 0}
+
     for employee in employees:
-        if employee["role"].lower() == "crew":
-            crew_count += 1
-        elif employee["role"].lower() == "kl":
-            KL_count += 1
-        elif employee["role"].lower() == "sl":
-            SL_count += 1
-    print("-----Roles----")
-    print(f"crew:{crew_count}")
-    print(f"KL:{KL_count}")
-    print(f"SL:{SL_count}")
-    print(f"Number of employees: {total_employees}")
+        role = employee.get_role().lower()
+        if role in counts:
+            counts[role] += 1
+
+    print("-----Roles-----")
+    print(f"Crew: {counts['crew']}")
+    print(f"KL: {counts['kl']}")
+    print(f"SL: {counts['sl']}")
+    print(f"Number of employees: {len(employees)}")
 
     
 
@@ -294,5 +350,6 @@ def main():
 
             else:
                 print("Invalid choice")  # Invalid menu option
-    if __name__ == "__main__":
-        main()
+
+if __name__ == "__main__":
+     main()
