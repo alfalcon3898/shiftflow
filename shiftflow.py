@@ -1,3 +1,7 @@
+import sqlite3
+from shift import Shift
+from schedule import Schedule
+from database import save_shift
 import json
 from employee import Employee
 from database import (
@@ -12,6 +16,9 @@ from database import (
 employees = []
 DATABASE_PATH = "shiftflow.db"
 employee_ids = {}
+
+# Manage all scheduled shifts through the Schedule class.
+schedule = Schedule()
 
 def find_employee(name):
     for employee in employees:
@@ -102,7 +109,6 @@ def view_employee():
     search_employee()
         
 
-# Update an employee's availability
 # Update an employee's availability
 def update_availability():
     name = input("Enter employee name: ")
@@ -271,15 +277,109 @@ def number_role_types():
     print(f"SL: {counts['sl']}")
     print(f"Number of employees: {len(employees)}")
 
-    
+  # Create and assign a new employee shift
+def create_shift():
+    name = input("Enter employee name: ")
+    employee = find_employee(name)
 
+    if employee is None:
+        print("Employee not found")
+        return
 
+    # Collect the date and times for the proposed shift.
+    date = input("Shift date (YYYY-MM-DD): ").strip()
+    start_time = input("Start time (e.g. 09:00 AM): ").strip()
+    end_time = input("End time (e.g. 05:00 PM): ").strip()
+
+    try:
+        # Create a Shift object using the existing Employee object.
+        shift = Shift(employee, date, start_time, end_time)
+
+        # Check the employee's 40-hour weekly limit.
+        if not schedule.can_assign_shift(employee, shift):
+            print("Shift rejected: employee would exceed 40 weekly hours.")
+            return
+
+        # Check availability and overlapping shifts.
+        schedule.add_shift(shift)
+
+        try:
+            # Save the validated shift to SQLite.
+            save_shift(DATABASE_PATH, employee_ids[employee], shift)
+        except sqlite3.Error as error:
+            # Undo the in-memory addition if saving fails.
+            schedule.remove_shift(shift)
+            print(f"Database error: {error}")
+            return
+
+    except (ValueError, TypeError) as error:
+        print(f"Shift rejected: {error}")
+        return
+
+    print(f"Shift added for {employee.get_name()}")
+    print(f"Duration: {shift.calculate_shift_hr()} hours")  
+
+# Display all employee shifts in chronological order
+def view_schedule():
+    shifts = schedule.get_shifts()
+
+    if not shifts:
+        print("No shifts scheduled")
+        return
+
+    sorted_shifts = sorted(
+        shifts,
+        key=lambda shift: (
+            shift.get_date(),
+            shift.get_start_time()
+        )
+    )
+
+    print("\n--- Employee Schedule ---")
+
+    for shift in sorted_shifts:
+        employee = shift.get_employee()
+
+        print(
+            f"{shift.get_date()} | "
+            f"{employee.get_name()} | "
+            f"{shift.get_start_time()} - {shift.get_end_time()} | "
+            f"{shift.calculate_shift_hr()} hours"
+        )
+
+# Load saved shifts using the same Employee objects held by the CLI.
+def load_saved_schedule():
+    loaded_schedule = Schedule()
+
+    with sqlite3.connect(DATABASE_PATH) as connection:
+        rows = connection.execute(
+            """
+            SELECT employee_id, date, start_time, end_time
+            FROM shifts
+            ORDER BY id
+            """
+        ).fetchall()
+
+    # Match database IDs to the existing Employee objects.
+    employees_by_id = {
+        employee_id: employee
+        for employee, employee_id in employee_ids.items()
+    }
+
+    for employee_id, date, start_time, end_time in rows:
+        employee = employees_by_id[employee_id]
+        shift = Shift(employee, date, start_time, end_time)
+
+        # Reapply scheduling rules when reconstructing the schedule.
+        loaded_schedule.add_shift(shift)
+
+    return loaded_schedule
 
 
 
 # Main menu loop
 def main():
-    global employees
+    global employees, schedule
 
     initialize_database(DATABASE_PATH)
 
@@ -291,6 +391,9 @@ def main():
     for employee_id, employee in saved_employees:
         employees.append(employee)
         employee_ids[employee] = employee_id
+
+    # Restore saved shifts after loading employees and their availability.
+    schedule = load_saved_schedule()
 
     while True:
 
@@ -306,7 +409,9 @@ def main():
             print("9. print Number of employees")
             print("10. Clear Availability")
             print("11. View amount of crew/sl/kl")
-            print("12. Exit")
+            print("12. Create Shift")
+            print("13. View Schedule")
+            print("14. Exit")
 
     
             try:
@@ -345,11 +450,13 @@ def main():
             elif choice == 11:
                 number_role_types()
             elif choice == 12:
+                create_shift()  # Create and save a new employee shift
+
+            elif choice == 13:
+                view_schedule()  # Display all scheduled shifts
+
+            elif choice == 14:
                 print("Goodbye")
                 break
-
-            else:
-                print("Invalid choice")  # Invalid menu option
-
 if __name__ == "__main__":
      main()

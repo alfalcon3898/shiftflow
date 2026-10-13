@@ -1,6 +1,8 @@
 import shiftflow
+import pytest
 from employee import Employee
-from database import load_employee, load_availability
+from schedule import Schedule
+from database import load_employee, load_availability,initialize_database,save_employee,load_all_employees
 
 
 
@@ -99,3 +101,113 @@ def test_availability_persists(monkeypatch, tmp_path):
     assert loaded.get_availability()["Monday"] == [
         ("09:00 AM", "05:00 PM")
     ]
+
+@pytest.fixture
+def scheduling_setup(tmp_path, monkeypatch):
+    # Use a temporary database so tests never modify real employee data.
+    database_path = str(tmp_path / "schedule_test.db")
+    initialize_database(database_path)
+
+    # Reset CLI state for each test.
+    monkeypatch.setattr(shiftflow, "DATABASE_PATH", database_path)
+    monkeypatch.setattr(shiftflow, "employees", [])
+    monkeypatch.setattr(shiftflow, "employee_ids", {})
+    monkeypatch.setattr(shiftflow, "schedule", Schedule())
+
+    # Create an employee with Tuesday availability.
+    employee = Employee("Jordan", "crew")
+    employee.add_availability(
+        "Tuesday", ("09:00 AM", "05:00 PM")
+    )
+
+    employee_id = save_employee(database_path, employee)
+
+    # Persist availability through the CLI's existing database helper.
+    from database import replace_employee_availability
+
+    replace_employee_availability(
+        database_path, employee_id, employee
+    )
+
+    shiftflow.employees.append(employee)
+    shiftflow.employee_ids[employee] = employee_id
+
+    return database_path, employee
+
+
+def test_create_shift_persists(scheduling_setup, monkeypatch, capsys):
+    database_path, employee = scheduling_setup
+
+    answers = iter([
+        "Jordan",
+        "2026-10-13",  # Tuesday
+        "09:00 AM",
+        "05:00 PM",
+    ])
+
+    monkeypatch.setattr("builtins.input", lambda _: next(answers))
+
+    shiftflow.create_shift()
+
+    output = capsys.readouterr().out
+    assert "Shift added for Jordan" in output
+    assert len(shiftflow.schedule.get_shifts()) == 1
+
+    # Confirm SQLite contains the shift.
+    import sqlite3
+
+    with sqlite3.connect(database_path) as connection:
+        rows = connection.execute(
+            "SELECT date, start_time, end_time FROM shifts"
+        ).fetchall()
+
+    assert rows == [
+        ("2026-10-13", "09:00 AM", "05:00 PM")
+    ]
+
+
+def test_duplicate_shift_rejected(scheduling_setup, monkeypatch, capsys):
+    answers = iter([
+        "Jordan", "2026-10-13", "09:00 AM", "05:00 PM",
+        "Jordan", "2026-10-13", "09:00 AM", "05:00 PM",
+    ])
+
+    monkeypatch.setattr("builtins.input", lambda _: next(answers))
+
+    shiftflow.create_shift()
+    shiftflow.create_shift()
+
+    output = capsys.readouterr().out
+
+    assert "Shift added for Jordan" in output
+    assert "Shift rejected:" in output
+    assert len(shiftflow.schedule.get_shifts()) == 1
+
+
+def test_shift_survives_reload(scheduling_setup, monkeypatch):
+    answers = iter([
+        "Jordan", "2026-10-13", "09:00 AM", "05:00 PM"
+    ])
+
+    monkeypatch.setattr("builtins.input", lambda _: next(answers))
+
+    shiftflow.create_shift()
+
+    # Simulate restarting by loading new Employee objects.
+    database_path, _ = scheduling_setup
+    saved_employees = load_all_employees(database_path)
+
+    shiftflow.employees.clear()
+    shiftflow.employee_ids.clear()
+
+    for employee_id, employee in saved_employees:
+        shiftflow.employees.append(employee)
+        shiftflow.employee_ids[employee] = employee_id
+
+    restored_schedule = shiftflow.load_saved_schedule()
+    restored_shifts = restored_schedule.get_shifts()
+
+    assert len(restored_shifts) == 1
+    assert restored_shifts[0].get_employee().get_name() == "Jordan"
+    assert restored_shifts[0].get_date() == "2026-10-13"
+    assert restored_shifts[0].calculate_shift_hr() == 8.0
