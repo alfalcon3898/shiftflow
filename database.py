@@ -145,3 +145,20 @@ def load_shifts(database_path, employee_id):
         loaded_shifts.append(shift)
 
     return loaded_shifts
+
+def load_all_employees(database_path):
+    connection = sqlite3.connect(database_path)
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT id FROM employees ORDER BY id")
+    results = cursor.fetchall()
+    connection.close()
+
+    employees = []
+
+    for (employee_id,) in results:
+        employee = load_employee(database_path, employee_id)
+        load_availability(database_path, employee_id, employee)
+        employees.append((employee_id, employee))
+
+    return employees
