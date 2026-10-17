@@ -1,205 +1,174 @@
 # ShiftFlow
 
-A command-line employee scheduling tool built in Python. ShiftFlow helps managers track employees, their roles, and their availability — replacing the paper, spreadsheets, and disconnected apps many small businesses still rely on.
+ShiftFlow is a Python command-line employee scheduling application developed as a Southern New Hampshire University CS 499 capstone project. Inspired by firsthand restaurant management experience, it helps managers maintain employee records, track availability, create shifts, and apply scheduling rules while persisting data in SQLite.
 
 ## The Problem
 
-As a manager, I've seen firsthand how much time gets lost building schedules by hand — time that could go toward actually training and supporting a team. I've also seen crew members miss shifts or struggle to request a shift swap simply because there was no easy system for it. ShiftFlow is being built to fix that, starting with the fundamentals: reliable employee and availability tracking, with real scheduling and conflict-detection logic planned as the project grows.
+Building schedules manually can consume time that managers could spend supporting employees. Disconnected spreadsheets and informal availability tracking can also cause scheduling errors.
 
-## Status
+ShiftFlow explores a structured approach to employee and shift management, with a longer-term goal of providing a mobile-friendly scheduling platform.
 
-**Current development: Enhancement 1 — Software Design & Engineering**
+## Current Status
 
-ShiftFlow V1 is a functional, procedural Python CLI application preserved on the `main` branch. It manages employee records and availability using a local JSON file.
+**Capstone enhancements: completed.**
 
-The `enhancement-1-oop` branch introduces three object-oriented classes:
+The enhanced application integrates object-oriented models, scheduling logic, and SQLite persistence into a functional command-line interface.
 
-* `Employee` — encapsulates employee information, validates names and roles, and manages availability.
-* `Shift` — represents an assigned shift, validates date and time formats, and calculates shift duration.
-* `Schedule` — manages a private collection of shifts through methods for adding, viewing, and removing shifts.
+**Testing results:**
+- 110 automated tests passing in the most recently reported pytest run.
+- Manual application tests passed, including employee management, availability, scheduling, database persistence, restarting, and deletion.
+- These development checks do not constitute production-readiness certification.
 
-The refactored classes currently use in-memory list storage. This design keeps Enhancement 1 focused on object-oriented programming, encapsulation, validation, and testing.
+## Implemented Features
 
-**Testing:** 35 automated tests passed in the latest confirmed run.
+- Add, search, view, update, and delete employees.
+- Manage employee roles and day-specific availability, including all-day and time-block entries.
+- Create and display assigned shifts, including shift duration and chronological schedule output.
+- Reject overlapping shifts and shifts marked unavailable.
+- Track weekly scheduled hours and check a 40-hour assignment threshold.
+- Calculate staffing shortages from required and current staffing counts.
+- Compare employees for hours allocation using remaining target hours and hire date, with random tie-breaking when both match.
+- Save employees, availability, and shifts in SQLite, then restore saved assignments on restart.
+- Preserve previously saved shifts when employee availability is subsequently changed.
 
-The OOP classes are implemented, but integration with the original CLI and persistence has not yet been confirmed. Advanced scheduling algorithms and SQLite migration are reserved for later enhancements.
-
-
-## Features (V1)
-
-- Add a new employee (name, role)
-- Search for an employee by name
-- View all employees, sorted alphabetically, with their availability
-- View a single employee's details
-- Update an employee's availability
-- Remove a specific availability entry
-- Clear all of an employee's availability
-- Delete an employee
-- Update an employee's role
-- Count total employees
-- Data persists to a local `employees.json` file between runs
+Some scheduling helper methods are implemented in the `Schedule` class but are not exposed as interactive menu options. Automated shift generation, a shift-request workflow, notifications, and AI scheduling are **not** part of the current CLI.
 
 ## Tech Stack
 
-* **Language:** Python 3
-* **Original application:** Procedural command-line interface (V1)
-* **Enhancement 1 architecture:** Object-oriented design using `Employee`, `Shift`, and `Schedule` classes
-* **Storage:** JSON file (`employees.json`) in V1; in-memory lists in the current OOP implementation
-* **Testing:** `pytest`
-* **Planned database:** SQLite (Enhancement 3)
+- **Language:** Python 3
+- **Interface:** Command-line application
+- **Architecture:** Object-oriented `Employee`, `Shift`, and `Schedule` classes
+- **Database:** SQLite via Python's `sqlite3` module
+- **Testing:** `pytest`
+- **Version control:** Git and GitHub
 
-## How to Run
+## Run the Application
 
-### Run the original V1 application
-
-1. Install Python 3.
-2. Clone or download the repository.
-3. Switch to the `main` branch.
-4. Run the application:
+1. Install Python 3 and clone or download the repository.
+2. Open a terminal in the project directory containing `shiftflow.py`.
+3. Start the CLI:
 
 ```bash
 python shiftflow.py
 ```
 
-5. Follow the numbered command-line menu to manage employees and availability.
+Follow the numbered menu. The application initializes a local `shiftflow.db` file to store its records.
 
-V1 saves employee data to `employees.json`.
+**Use fictional employee data when demonstrating or publishing this project.**
 
-### Review the OOP enhancement
+## Run Tests
 
-Switch to the enhancement branch:
-
-```bash
-git switch enhancement-1-oop
-```
-
-The refactored implementation is organized into three Python files:
-
-* `employee.py` — employee information, validation, and availability management.
-* `shift.py` — shift information, date/time validation, and duration calculations.
-* `schedule.py` — adding, retrieving, and removing shifts.
-
-These classes currently provide the foundation for the scheduling system. A complete command-line interface for the refactored version has not yet been confirmed.
-
-### Run the automated tests
-
-From the project directory, install `pytest` if necessary:
+Install pytest if necessary:
 
 ```bash
 python -m pip install pytest
 ```
 
-Then run:
+Run the automated suite from the project directory:
 
 ```bash
-python -m pytest -q
+python -m pytest tests/ -q
 ```
 
-The latest confirmed test run completed with **35 passing tests**.
+The most recently reported suite result was **110 passing tests**, with warnings for missing availability entries. The manual CLI walkthrough also passed.
 
-The test suite covers the `Employee`, `Shift`, and `Schedule` classes, including validation, shift-duration calculations, collection management, and encapsulation.
+Test counts may change as regression coverage is expanded.
 
-## Known Limitations and Current Progress
+## CS 499 Capstone Enhancements
 
-### Original V1 limitations
+### Enhancement 1 — Software Design and Engineering
 
-The original version of ShiftFlow has several limitations that motivated the capstone enhancements:
+Refactored the original procedural employee-management program into reusable classes.
 
-* Employees are represented as dictionaries rather than objects.
-* Input validation is limited, allowing malformed employee information to enter the system.
-* There are no automated tests.
-* The application tracks employee availability but does not represent assigned shifts.
-* There is no scheduling conflict detection.
-* Employee data is stored in a flat JSON file rather than a relational database.
+The `Employee` class manages identity, role, and availability; `Shift` models an assignment and validates its date and times; and `Schedule` encapsulates a collection of shifts.
 
-### Improvements implemented in Enhancement 1
+Validation, private attributes, and controlled access methods improve maintainability and reduce malformed data.
 
-The object-oriented refactor addresses several of these limitations:
+### Enhancement 2 — Algorithms and Data Structures
 
-* Introduced separate `Employee`, `Shift`, and `Schedule` classes.
-* Encapsulated employee information and shift collections using private attributes.
-* Added validation for employee names, roles, shift dates, and time formats.
-* Added methods for managing employee availability and scheduled shifts.
-* Added shift-duration calculations, including overnight shifts.
-* Added automated tests using `pytest`, with 35 tests passing in the latest confirmed run.
-* Protected internal collections by returning copies from `Employee.get_availability()` and `Schedule.get_shifts()`.
+Added scheduling checks for shift conflicts and employee availability, calculations for shift duration and weekly hours, a 40-hour assignment limit, staffing-shortage calculations, and employee selection logic using remaining target hours and hire date.
 
-The refactored classes currently use in-memory lists. Integration with the original command-line interface and persistent storage has not yet been confirmed.
+These algorithms provide building blocks for more advanced scheduling, rather than a complete automatic schedule generator.
 
-Advanced scheduling algorithms and database functionality remain outside the current enhancement.
+### Enhancement 3 — Databases
 
-## Planned Enhancements
+Migrated the enhanced application to SQLite persistence for employees, availability, and scheduled shifts.
 
-ShiftFlow is being developed through three capstone enhancement categories.
+The CLI loads saved employees and reconstructs scheduled shifts at startup. Previously saved shifts are restored without reapplying the employee's current availability rules, while new assignments still receive availability and conflict checks.
 
-### Enhancement 1: Software Design & Engineering
+## Original Artifact and Evolution
 
-**Status: Core OOP implementation completed; documentation and final review in progress.**
+The original ShiftFlow V1 was a procedural Python CLI that tracked employees and availability using JSON.
 
-Refactor the original procedural application into an object-oriented design.
+The enhanced capstone implementation replaces that storage approach with SQLite and adds object-oriented scheduling models and algorithms.
 
-Implemented improvements include:
+Earlier versions may be available in the repository's Git history or branches, depending on what has been published.
 
-* `Employee`, `Shift`, and `Schedule` classes.
-* Encapsulation through private attributes and public methods.
-* Input validation and explicit error handling.
-* Automated unit and integration tests using `pytest`.
-* In-memory list storage to keep the initial design simple.
+## Current Limitations
 
-The current implementation provides a foundation for future scheduling functionality.
-
-Remaining work includes final documentation, the enhancement narrative, and verification against the assignment rubric.
-
-### Enhancement 2: Algorithms & Data Structures
-
-**Status: Planned.**
-
-Develop scheduling functionality using the object-oriented foundation established in Enhancement 1.
-
-Planned features include:
-
-* Detecting overlapping employee shifts.
-* Checking staffing coverage.
-* Tracking scheduled hours and identifying potential overtime.
-* Supporting shift-swap requests.
-* Distributing hours using employee preferences, seniority, and labor-budget constraints.
-
-These features will introduce scheduling rules beyond the basic creation and management of shift objects.
-
-### Enhancement 3: Databases
-
-**Status: Planned.**
-
-Replace flat-file and temporary in-memory storage with a relational database.
-
-Planned improvements include:
-
-* Migrating persistent data storage to SQLite.
-* Designing normalized tables for employees, shifts, roles, and availability.
-* Introducing a database access layer.
-* Supporting reliable storage and retrieval of employee and scheduling information.
-
-The database enhancement will build on the object-oriented architecture developed in Enhancement 1.
+- The interface is terminal-based; there is no web or mobile client.
+- Shift swaps, employee self-service requests, approval notifications, and AI-generated schedules remain future work.
+- Staffing requirements use a simple sales threshold helper rather than a configurable labor forecasting model.
+- The CLI is intended as a capstone demonstration, not a production-ready multi-user scheduling service.
 
 ## Long-Term Vision (Beyond the Capstone)
 
-Once the core rebuild above is complete, ShiftFlow is intended to grow into a full mobile-friendly scheduling platform:
+ShiftFlow is intended to grow into a full mobile-friendly scheduling platform.
 
-- **Attendance tracking** — record call-offs and no-shows per employee, so managers can see patterns over time (e.g., how many times a given worker has called off) rather than relying on memory.
-- **Shift-swap requests, mobile-first** — an employee requests a shift change from their phone; once another employee accepts, a notification goes out for approval to the GM (always notified), plus the specific shift leader/mod who is actually scheduled to be in charge that day — not every mod, just the one on duty, so people aren't bothered about shifts they have nothing to do with. Once approved, the schedule updates automatically.
-- **AI-assisted scheduling** — the schedule itself adjusts automatically as shift-swap requests are approved, rather than requiring a manager to manually rebuild it.
-- **Sales-tiered staffing coverage (concrete, near-term idea — closer than the sales-forecasting idea below):** coverage checking that ties total staffing to predicted sales, based on real staffing rules observed at work — a MOD (manager on duty) must always be present to open/close; predicted sales around $6-7K call for 7 total workers including the MOD; predicted sales around $4-5K call for 6 total workers including the MOD; the GM doesn't count toward these numbers. This is more concrete and closer-term than full sales forecasting, and could realistically become part of the Algorithms & Data Structures enhancement rather than staying a "someday" feature.
-- **Structured availability input:** long-term goal is a dropdown/calendar-style UI for managers to select availability, rather than free-typing it, to keep bad/inconsistent data from entering the system — with an option to also import availability data from an Excel export, matching how the workplace's current scheduling process already works. The underlying data layer (e.g. `Employee.add_availability()`) is intentionally built to be UI-agnostic, so it doesn't matter whether the input eventually comes from typing, a dropdown, or an Excel import — no rewrite needed as the interface evolves.
-- **Sales-based labor forecasting (later idea, not near-term):** the schedule could incorporate projected sales data (e.g., food sales) to recommend labor adjustments — flagging when a slow projected sales period suggests cutting hours/staff, or a busy projected period suggests adding coverage. This would tie labor costs directly to expected revenue instead of scheduling purely on availability/fairness, closer to how real restaurant/retail labor budgeting actually works. This is a significant addition (would need a sales-data source and forecasting logic) and is explicitly a "someday" idea, not scoped into V3/V4.
-- **Gamified customization** — a lighter, more engaging layer on top of the core tool:
-  - Each business can apply its own branding/logo with a fun, customized style (e.g., a company's logo reimagined in a friendly, stylized way).
-  - Each employee gets a customizable character/avatar.
-  - Employees unlock new customization options for their character by showing up on time and maintaining good attendance — turning a basic scheduling need into something more engaging to actually use.
-  - **Monthly outfit mechanic (attendance meter, points-based):** each month features a limited-time avatar outfit, unlocked by reaching a visible attendance-points threshold (e.g., 100 points) by month's end. On-time shifts worked add points; violations subtract them, scaled by severity — an advance-notice call-off costs little to nothing (normal, expected process), a short-notice call-off costs a moderate amount, a no-call/no-show costs the most, and lateness scales with how late. The meter resets each month, keeping the incentive ongoing rather than a one-time reward.
-  - **Why points instead of odds:** an earlier design considered a probability-based unlock (attendance affecting the *chance* of earning the outfit), but that risked feeling like a hidden "black box" and eroding trust. A visible points meter is fully transparent — every point change is a direct, explainable consequence, formula-based and consistent for every employee, so nothing can look manually tweaked or unfair.
-  - **Design caution:** penalties should read as "progress paused," not punitive or shame-based — a fun system can backfire fast if it starts to feel demeaning to real employees doing real jobs.
+### Attendance Tracking
 
-This long-term vision is separate from the CS 499 capstone scope (which focuses on the three enhancement categories above) but represents the direction the project is headed as a personal/SaaS product afterward.
+Record call-offs and no-shows per employee so managers can see patterns over time rather than relying on memory.
+
+### Mobile-First Shift Swaps
+
+An employee requests a shift change from their phone. Once another employee accepts, a notification goes out for approval to the general manager and the specific shift leader or manager scheduled to be in charge that day.
+
+Once approved, the schedule updates automatically.
+
+### AI-Assisted Scheduling
+
+Introduce AI-assisted schedule creation and adjustments, reducing the time managers spend manually building and updating schedules.
+
+### Sales-Tiered Staffing Coverage
+
+Tie staffing requirements to projected sales using restaurant-specific rules.
+
+For example, projected sales around $6,000–$7,000 may call for seven workers including the manager on duty, while sales around $4,000–$5,000 may call for six.
+
+The system would also ensure a manager is present for opening and closing shifts.
+
+These are proposed rules based on workplace experience, not features fully implemented in the current application.
+
+### Structured Availability Input
+
+Replace free-text availability entry with a calendar-style interface where managers can select days and times.
+
+Potentially support importing availability from Excel exports.
+
+The underlying employee availability methods are designed to remain independent of the future user interface.
+
+### Sales-Based Labor Forecasting
+
+Eventually incorporate projected sales to recommend staffing and labor adjustments.
+
+This is a longer-term feature requiring additional sales data and forecasting logic.
+
+### Gamified Employee Customization
+
+Explore a more engaging experience through:
+
+- Custom business branding and logos.
+- Employee characters and avatars.
+- Unlockable customization options.
+- Monthly avatar outfits earned through transparent attendance points.
+
+A proposed monthly attendance meter would reward punctuality while distinguishing advance-notice absences from short-notice absences and no-call/no-shows.
+
+The system would use clear, explainable rules rather than random reward probabilities.
+
+**Design consideration:** Gamification should remain respectful of employees and avoid punitive or shaming experiences.
+
+This long-term vision is separate from the CS 499 capstone scope and represents the direction ShiftFlow may take as an independent software product.
 
 ## Author
 

@@ -1,3 +1,20 @@
+# Python
 __pycache__/
 *.pyc
 .venv/
+venv/
+.pytest_cache/
+
+# Local database
+*.db
+*.db-journal
+
+# Employee data
+employees.json
+employees_original_*.json
+
+# Environment
+.env
+
+# Old nested project
+/shiftflow/
