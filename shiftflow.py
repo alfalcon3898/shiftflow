@@ -338,7 +338,9 @@ def view_schedule():
         shifts,
         key=lambda shift: (
             shift.get_date(),
-            shift.get_start_time()
+            datetime.strptime(
+                shift.get_start_time(), "%I:%M %p"
+            ).time()
         )
     )
 
@@ -377,8 +379,8 @@ def load_saved_schedule():
         employee = employees_by_id[employee_id]
         shift = Shift(employee, date, start_time, end_time)
 
-        # Reapply scheduling rules when reconstructing the schedule.
-        loaded_schedule.add_shift(shift)
+        # Restore saved shifts without rechecking employee availability.
+        loaded_schedule.restore_shift(shift)
 
     return loaded_schedule
 

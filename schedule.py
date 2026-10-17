@@ -57,8 +57,20 @@ class Schedule:
 
         # Add the validated Shift object to the schedule.
         self.__shifts.append(shift)
+        
+    # Restore an existing shift from the database.
+    def restore_shift(self, shift: Shift) -> None:
+        if not isinstance(shift, Shift):
+            raise TypeError("Shift must be a Shift object.")
 
-       
+        # Prevent duplicate or overlapping saved shifts.
+        for existing_shift in self.__shifts:
+            if shift.conflicts_with(existing_shift):
+                raise ValueError("Saved shift conflicts with an existing shift.")
+
+        # Do not recheck availability for an already saved assignment.
+        self.__shifts.append(shift)
+
 
     # --- Get Shifts ---
 
