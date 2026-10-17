@@ -3,6 +3,7 @@ from shift import Shift
 from schedule import Schedule
 from database import save_shift
 import json
+from datetime import datetime
 from employee import Employee
 from database import (
     initialize_database,
@@ -169,7 +170,7 @@ def update_availability():
 
     print(f"Availability updated for {employee.get_name()}")
 
-#Delete employee
+# Delete employee
 def delete_employee():
     name = input("Enter employee name: ")
     employee = find_employee(name)
@@ -178,13 +179,19 @@ def delete_employee():
         print("Employee not found")
         return
 
+    # Remove the employee's shifts from the active schedule
+    for shift in schedule.get_shifts().copy():
+        if shift.get_employee() is employee:
+            schedule.remove_shift(shift)
+
+    # Delete employee from SQLite
     delete_employee_record(DATABASE_PATH, employee_ids[employee])
 
+    # Remove employee from memory
     employees.remove(employee)
     del employee_ids[employee]
 
     print(f"{employee.get_name()} was deleted.")
-
 
 # Update employee update role
 def update_role():
