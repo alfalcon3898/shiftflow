@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from database import load_employee
 
 
@@ -13,6 +13,9 @@ def create_app(database_path):
         #Load the employee object from database supplied to create_app
 
         employee = load_employee(database_path, employee_id)
+
+        if employee is None:
+            raise HTTPException(status_code=404, detail= "Employee not found")
 
         #read the employee's data through its public getters.
         return{
